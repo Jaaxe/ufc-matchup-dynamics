@@ -205,3 +205,27 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+
+# PROJECT-SPECIFIC IGNORES
+
+# Data
+data/raw/*
+data/processed/*
+data/external/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# Machine Learning Models
+*.pt
+*.pth
+*.h5
+*.pkl
+*.joblib
+models/*
+!models/.gitkeep
+
+# Mac OS specific
+.DS_Store
