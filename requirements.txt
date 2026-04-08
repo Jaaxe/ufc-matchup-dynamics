@@ -4,3 +4,5 @@ matplotlib
 seaborn
 scikit-learn
 ipykernel
+# Optional: pip install torch     (notebooks 12, 15 — autoencoder)
+# Optional: pip install xgboost   (notebook 17 — XGBoost comparison cell)

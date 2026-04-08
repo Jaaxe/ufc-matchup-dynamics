@@ -229,3 +229,6 @@ models/*
 
 # Mac OS specific
 .DS_Store
+
+# Local/temporary packages (not used by pipeline)
+temp_pypdf/
