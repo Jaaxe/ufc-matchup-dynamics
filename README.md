@@ -71,17 +71,20 @@ Once styles or embeddings are learned, they are used to analyze and predict matc
 
 - **Style interaction matrices** — For each pair of style clusters (e.g., Striker vs. Grappler), compute win rates, sample sizes, and significance tests (e.g., chi-square). This reveals which styles tend to beat which.
 - **Hybrid analysis** — Test whether "hybrid" fighters (high entropy, generalists) perform better than specialists, using statistical tests on win rates vs. hybrid score.
-- **Supervised prediction** — Construct matchup-level features (e.g., embedding differences between Fighter A and Fighter B) and train classifiers (**Random Forest**, **gradient boosting**, optional **XGBoost**, **logistic regression**, **calibration**; see notebook **17**) to predict fight outcomes. Compare against baselines that use only raw statistics (and **Vegas** where odds exist; notebooks **15–16**).
+- **Unified matchup table** — Notebook **18** produces a single canonical feature matrix (`ufc_matchup_features.csv`) with **leakage-free** pre-fight rolling aggregates, Elo / Glicko-2 ratings walked in chronological order, GMM posteriors, autoencoder embeddings, physical attributes, weight-class one-hots, empirical heatmap probabilities, de-vigged Vegas probabilities, and an event-ordered 60/20/20 `split` column.
+- **Supervised prediction** — Notebook **19** trains a bakeoff of six model families (logistic regression, random forest, histogram gradient boosting, XGBoost, LightGBM, MLP) plus an **isotonic stacking** meta-learner over seven nested feature-set ablations (`z_only → +gmm → +ae → +rolling → +ratings → +physical_wc → full → full+vegas`). All models share the same split and corner symmetry augmentation so metrics are directly comparable.
+- **Vegas comparison** — Notebook **20** benchmarks the project's stack against de-vigged Vegas probabilities on the objective target `Win_A`, and breaks the calibration down by weight class, k=5 style-pair cell, and hybrid-score quintile.
 
 ### Downstream Tasks and Interpretability
 
-Embeddings and cluster assignments are used for:
+Embeddings, cluster assignments, and rolling pre-fight features feed four linked downstream tasks:
 
-- Outcome prediction (who wins)
-- Fight dynamics prediction — notebook **16** (method props vs boosting; finish vs decision); finer strike/grapple mix targets remain *optional*
-- Upset / favorite analysis — notebooks **13** (Elo favorite) and **15** (Vegas favorite vs models where odds exist)
+- **Outcome prediction** — notebook **19** (bakeoff + stack) and **20** (Vegas comparison on `Win_A`).
+- **Fight dynamics prediction** — notebook **21**: binary finish, 3-way method (KO/SUB/DEC), a hierarchical 6-way decomposition `P(finish) × P(method | finish) × P(winner | method)`, and regressions for duration / sig strikes / takedowns / control / knockdowns / submission attempts / ground-strike share. Includes the **style-divergence → finish-rate** thesis plot.
+- **Upset prediction** — notebook **22**: Vegas-as-feature residual model with ROC-AUC, top-*k* lift, a de-vigged ROI simulation, and grouped permutation importance over feature groups from `ufc_feature_groups.json`.
+- **Sequence modeling (stretch)** — notebook **23**: a Siamese GRU over each fighter's last 8 pre-fight histories plus tabular context, compared against the NB 19 HGB baseline on identical test events.
 
-The project emphasizes interpretability: we aim for models that capture *meaningful* stylistic structure rather than noise. Visualization of clusters, embedding spaces, and interaction matrices is central to this goal.
+The project emphasizes interpretability: we aim for models that capture *meaningful* stylistic structure rather than noise. Visualization of clusters, embedding spaces, interaction matrices, reliability curves, and grouped feature-importance bars is central to this goal.
 
 ---
 
@@ -122,7 +125,7 @@ The project uses publicly available UFC fight datasets compiled from official UF
 
 ### Supplementary Data
 
-- **Betting odds:** Kaggle UFC betting odds CSV under `data/raw/kaggle_odds/`; cleaned output is documented in `data/README.md` and produced in notebook **14**, then used for Vegas baselines in **15**.
+- **Betting odds:** Kaggle UFC betting odds CSV under `data/raw/kaggle_odds/`; cleaned output is documented in `data/README.md` and produced in notebook **14**, then consumed by the Vegas baseline in notebook **15**, as a joined column in the unified feature table in **18**, for the objective Vegas comparison in **20**, and as a feature (and as the reference distribution for the ROI simulation) in the upset-prediction pipeline in **22**.
 - Round-level statistics for finer-grained dynamics — *optional extension*
 
 ### File Structure
@@ -141,11 +144,18 @@ See `data/README.md` for full details. Key outputs:
 
 ### Notebooks (`notebooks/`)
 
-The analysis pipeline is organized as a sequential workflow. Run notebooks in numerical order (**01–17**) from the `notebooks/` directory (paths use `../data/`). All notebooks are read-only except those that write pipeline outputs; running the full sequence reproduces processed artifacts when inputs are present. **Interpretability:** Each notebook includes goal statements, figure interpretations, and takeaway sections. **Code cells:** Every code cell begins with a short **header** (notebook name, cell index, linked markdown section) and a **workflow summary** of how to read that cell; additional `# ---` section banners appear in denser notebooks (e.g. 13–16). Optional maintenance scripts live in `scripts/` (`annotate_notebook_cells.py`, `enrich_workflow_blurbs.py`) if you need to re-apply the same commenting pattern after large edits.
+The analysis pipeline is organized as a sequential workflow in five parts. Run notebooks in numerical order (**01–23**) from the `notebooks/` directory (paths use `../data/`). **Interpretability:** Each notebook includes goal statements, figure interpretations, and takeaway sections. **Code cells:** Every code cell begins with a short **header** (notebook name, cell index, linked markdown section) and a **workflow summary** of how to read that cell. Shared helpers for the unified modeling stack live in `scripts/matchup_utils.py` (rolling pre-fight aggregates, Elo/Glicko-2, event splits, weight-class one-hots, corner symmetrization).
+
+- **Part I — Data and EDA (01–07).** Cleaning, fighter-level aggregation, bias checks, comprehensive EDA, and matchup-level deltas.
+- **Part II — Style Discovery (08–12).** K-Means, GMM (selection → final fit with soft posteriors and Hybrid Scores), style-pair interaction matrix, and autoencoder embeddings.
+- **Part III — First-pass prediction (13–17, legacy).** Initial upset analysis, odds cleaning, and first-cut Vegas / boosting / calibration comparisons. Retained for continuity; **superseded** by Part V on the objective `Win_A` target and a single unified feature matrix.
+- **Part IV — Unified feature construction (18).** Builds the canonical `ufc_matchup_features.csv` table with leakage-free pre-fight rolling rates, Elo, Glicko-2, GMM posteriors, AE embeddings, physicals, Weight_Class one-hots, heatmap, and Vegas, plus an event-ordered 60/20/20 `split` column. All of Part V reads this one file.
+- **Part V — Unified modeling stack (19–23).** Win/loss bakeoff + isotonic stacking, Vegas comparison on `Win_A` with groupwise calibration, fight dynamics suite, upset prediction with Vegas as a feature, and an optional Siamese GRU sequence model.
 
 
 | #   | Notebook                            | Purpose                                                                                                                                       |
 | --- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| *Part I — Data and EDA*                   |||
 | 01  | `01_data_cleaning.ipynb`            | Load raw fight data, parse per-fighter stats, output cleaned fight-level dataset                                                              |
 | 02  | `02_feature_engineering.ipynb`      | Aggregate fights into fighter-level style profiles (per-minute rates, positional ratios, control ratio)                                       |
 | 03  | `03_bias_checks.ipynb`              | Validate weight-class bias and sample-size stability; informs min-fights filter and normalization                                            |
@@ -153,16 +163,26 @@ The analysis pipeline is organized as a sequential workflow. Run notebooks in nu
 | 05  | `05_finalize_dataset.ipynb`         | Apply experience filter (min 5 fights), weight-class Z-score normalization, produce final modeling dataset; includes normalization validation |
 | 06  | `06_eda_comprehensive.ipynb`        | Master EDA: temporal trends, weight-class bias, style space, damage anatomy, referee effects, glass-cannon analysis                         |
 | 07  | `07_matchup_analysis.ipynb`         | Matchup-level analysis: advantage deltas, correlation with outcomes, style divergence vs. finish rate                                       |
+| *Part II — Style Discovery*                |||
 | 08  | `08_kmeans_style_discovery.ipynb`   | K-Means clustering (k=4,5,6); elbow/silhouette model selection; cluster interpretation                                                         |
 | 09  | `09_gmm_model_selection.ipynb`      | GMM model selection via AIC/BIC; introduces soft clustering and Hybrid Score concept                                                          |
-| 10  | `10_gmm_style_discovery.ipynb`      | Fit GMM at k=3 and k=5; save cluster assignments and Hybrid Scores to `ufc_gmm_comparison.csv`                                                |
+| 10  | `10_gmm_style_discovery.ipynb`      | Fit GMM at k=3 and k=5; save cluster assignments, Hybrid Scores, **and soft posteriors `pk3_*`/`pk5_*`** to `ufc_gmm_comparison.csv`          |
 | 11  | `11_style_interaction_matrix.ipynb` | Core matchup asymmetry: win-rate matrix by style pair, hybrid vs. specialist analysis, chi-square tests                                       |
-| 12  | `12_autoencoder_supervised.ipynb`   | Autoencoder embeddings; supervised outcome prediction using embedding differences (Random Forest)                                             |
-| 13  | `13_upset_analysis.ipynb`           | Elo-based “favorite,” style heatmap vs upsets, Z-delta RF with **event-based** train/test split                                             |
+| 12  | `12_autoencoder_supervised.ipynb`   | Autoencoder embeddings; supervised outcome prediction using embedding differences (Random Forest); **persists 3-D embeddings to `ufc_ae_embeddings.csv`** |
+| *Part III — First-pass prediction (legacy)* |||
+| 13  | `13_upset_analysis.ipynb`           | Elo-based "favorite," style heatmap vs upsets, Z-delta RF with **event-based** train/test split                                             |
 | 14  | `14_odds_cleaning.ipynb`            | Clean Kaggle UFC odds → one row per `Fight_Id`, US market, de-vig implied probs → `ufc_fight_odds_clean.csv`                                  |
-| 15  | `15_vegas_vs_predictions.ipynb`    | Compare Vegas implied **P(Vegas favorite wins)** to heatmap, Z-RF, and AE+RF on the **same** test events as notebook 13                      |
-| 16  | `16_fight_dynamics_vegas.ipynb`    | **Fight dynamics:** six-way method props (KO/SUB/DEC per fighter) vs `HistGradientBoosting`; **finish vs decision** vs Vegas; event split   |
-| 17  | `17_boosting_calibration_winloss.ipynb` | **Win/loss baselines:** HistGradientBoosting, calibrated HGB, logistic vs RF; optional **XGBoost** if installed                          |
+| 15  | `15_vegas_vs_predictions.ipynb`    | *(Legacy)* Compare Vegas implied **P(Vegas favorite wins)** to heatmap, Z-RF, and AE+RF on the **same** test events as notebook 13. Superseded by NB 20. |
+| 16  | `16_fight_dynamics_vegas.ipynb`    | *(Legacy)* 4-feature 6-way method props vs `HistGradientBoosting`; **finish vs decision** vs Vegas. Superseded by NB 21.                    |
+| 17  | `17_boosting_calibration_winloss.ipynb` | *(Legacy)* **Win/loss baselines** on 4 Z-deltas. Superseded by NB 19's ablation ladder.                                                 |
+| *Part IV — Unified feature construction*  |||
+| **18**  | `18_build_matchup_features.ipynb`  | **Unified feature table.** Produces `ufc_matchup_features.csv` + `ufc_fighter_profiles_rolling.csv` + `ufc_feature_groups.json`. Combines rolling pre-fight rates (leakage-free), Elo, Glicko-2, GMM posteriors, AE embeddings, physical attributes, Weight_Class one-hots, Vegas de-vigged probs, and `split` column (train/val/test by event date, 60/20/20). |
+| *Part V — Unified modeling stack*         |||
+| **19**  | `19_winloss_bakeoff.ipynb`         | **Win/loss bakeoff.** LR/RF/HGB/XGB/LightGBM/MLP + **isotonic stack**. Seven feature ablations (`z_only → +gmm → +ae → +rolling → +ratings → +physical_wc → full → full+vegas`). Walk-forward CV on the train+val portion. Reports AUC, Brier, log-loss, accuracy, ECE on val and test. |
+| **20**  | `20_vegas_winloss_comparison.ipynb`| **Vegas vs the project** on the objective label `Win_A` (fixes NB 15's circular target). **Groupwise calibration** by Weight_Class, k=5 cluster pair, and Hybrid-score quintile. |
+| **21**  | `21_dynamics_suite.ipynb`          | **Fight dynamics.** Binary finish, 3-way method (KO/SUB/DEC), 6-way method with **hierarchical decomposition** `P(finish) × P(method\|finish) × P(winner\|method)`, and regressions for duration / sig strikes / takedowns / control / knockdowns / submission attempts / ground-strike share. Includes the **style-divergence → finish-rate** thesis plot. |
+| **22**  | `22_upset_prediction_vegas.ipynb`  | **Upset prediction.** Treats Vegas as a **feature** (idea #2) and uses the signal `r = p_model(Win_A) − p_vegas_A` as an upset detector. Reports ROC-AUC, top-k lift, a de-vigged ROI simulation, and grouped permutation importance over feature groups. |
+| **23**  | `23_sequence_model.ipynb`          | **Sequence model** (optional stretch). Siamese GRU over last-8 pre-fight histories per corner + tabular context. Honest baseline comparison against HGB on identical test events. |
 
 
 ### Running the Pipeline
@@ -173,12 +193,16 @@ From the project root:
 python run_pipeline.py
 ```
 
-This executes all notebooks (**01–17**) in numerical order. Notebook **15** uses **PyTorch** for the autoencoder path; **14–16** need `data/raw/kaggle_odds/UFC_betting_odds.csv`. Notebook **16** uses only sklearn; it requires rows with all six **method prop** prices (coverage is a subset of fights). Notebook **17** optionally uses **XGBoost** (`pip install xgboost`). Alternatively, run notebooks manually from the `notebooks/` directory in Jupyter.
+This executes all notebooks (**01–23**) in numerical order. Notebook **12** uses **PyTorch** for the autoencoder; **14–16**, **20**, **22** consume `data/raw/kaggle_odds/UFC_betting_odds.csv`. Notebook **17** optionally uses **XGBoost** (`pip install xgboost`); **19** optionally uses **LightGBM** (`pip install lightgbm`). Notebook **23** requires **PyTorch**. Notebooks **15–17** are retained for continuity but are superseded by **19–22**, which load a single unified feature matrix produced by **18** and use a consistent 60/20/20 event-ordered split.
 
 ### Data (`data/`)
 
-- `raw/` — Original UFC datasets
-- `processed/` — Cleaned data, fighter profiles, and model outputs (cluster assignments, GMM results). See `data/README.md`.
+- `raw/` — Original UFC datasets (plus optional `kaggle_odds/`)
+- `processed/` — Cleaned data, fighter profiles, style-discovery outputs, the unified matchup table (`ufc_matchup_features.csv`), rolling profiles, autoencoder embeddings, and feature-group metadata. See `data/README.md` for the full artifact map.
+
+### LaTeX Thesis Draft (`latex/`)
+
+The thesis report compiles with `XeLaTeX` (or any LaTeX engine with `fontspec`) from `latex/main.tex`, e.g. `latexmk -xelatex main.tex` inside `latex/`. See the existing `latexmkrc` for the template's default build configuration.
 
 ---
 
@@ -190,10 +214,12 @@ This executes all notebooks (**01–17**) in numerical order. Notebook **15** us
 | **Cleaned UFC dataset**           | ✓ Done      | Well-documented, reproducible pipeline from raw data to modeling-ready tables                                       |
 | **Fighter style representations** | ✓ Done      | K-Means clusters, GMM probabilistic assignments, autoencoder embeddings                                             |
 | **Matchup analysis**              | ✓ Done      | Style interaction matrices, win rates by style pair, hybrid vs. specialist analysis, statistical significance tests |
-| **Fight dynamics models**         | In progress | Notebook **16**: six-way method distribution + finish vs decision vs de-vigged Vegas props (subset with full prop prices) |
-| **Upset prediction exploration**  | In progress | Notebook **13** (Elo favorite vs heatmap / Z-RF); notebook **15** compares models to **Vegas** where odds exist     |
-| **Visualizations**                | In progress | Cluster plots, embedding visualizations, matchup heatmaps, style profiles                                           |
-| **Final report and poster**       | Planned     | Written report and project poster for thesis submission                                                             |
+| **Fight dynamics models**         | ✓ Done      | Notebook **21**: binary finish, 3-way and hierarchical 6-way method, duration / strike / takedown regressions, style-divergence → finish-rate plot |
+| **Upset prediction**              | ✓ Done      | Notebook **22**: Vegas-as-feature residual model with ROC / lift / ROI vs Elo-residual and heatmap-residual baselines |
+| **Win-loss bakeoff**              | ✓ Done      | Notebook **19**: 7-way feature ablation × 6 model families + isotonic stack, walk-forward CV on train+val          |
+| **Vegas comparison**              | ✓ Done      | Notebook **20**: `Win_A` objective target, groupwise calibration by weight class / cluster pair / hybrid quintile  |
+| **Visualizations**                | ✓ Done      | Cluster plots, embedding visualizations, matchup heatmaps, reliability curves, grouped permutation-importance bars, style-divergence → finish-rate plot, lift / ROI curves (NB 11, 12, 19, 20, 21, 22) |
+| **Final report and poster**       | In progress | Thesis LaTeX draft lives in `latex/` (see `latex/main.tex`); poster outstanding                                     |
 
 
 ---

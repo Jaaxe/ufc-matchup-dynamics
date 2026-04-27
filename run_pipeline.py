@@ -31,6 +31,12 @@ PIPELINE = [
     "15_vegas_vs_predictions.ipynb",
     "16_fight_dynamics_vegas.ipynb",
     "17_boosting_calibration_winloss.ipynb",
+    "18_build_matchup_features.ipynb",
+    "19_winloss_bakeoff.ipynb",
+    "20_vegas_winloss_comparison.ipynb",
+    "21_dynamics_suite.ipynb",
+    "22_upset_prediction_vegas.ipynb",
+    "23_sequence_model.ipynb",
 ]
 
 

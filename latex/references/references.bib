@@ -1,0 +1,303 @@
+% References for "Matchup Dynamics in the UFC"
+% Jarvis Xie, Yale University, S&DS 4920 senior thesis
+%
+% Scope: only entries that correspond to methods, theorems, metrics,
+% or prior work we actually incorporate.
+
+% -----------------------------------------------------------------
+%  Foundational ML / statistics textbooks (GMM, EM, K-means, RF)
+% -----------------------------------------------------------------
+
+@book{hastie2009elements,
+  title     = {The Elements of Statistical Learning: Data Mining, Inference, and Prediction},
+  author    = {Hastie, Trevor and Tibshirani, Robert and Friedman, Jerome},
+  year      = {2009},
+  edition   = {2},
+  publisher = {Springer},
+  address   = {New York},
+}
+
+@book{bishop2006pattern,
+  title     = {Pattern Recognition and Machine Learning},
+  author    = {Bishop, Christopher M.},
+  year      = {2006},
+  publisher = {Springer},
+  address   = {New York},
+}
+
+@article{dempster1977em,
+  title   = {Maximum likelihood from incomplete data via the {EM} algorithm},
+  author  = {Dempster, A.~P. and Laird, N.~M. and Rubin, D.~B.},
+  journal = {Journal of the Royal Statistical Society: Series B (Methodological)},
+  volume  = {39},
+  number  = {1},
+  pages   = {1--38},
+  year    = {1977},
+}
+
+@article{rousseeuw1987silhouettes,
+  title   = {Silhouettes: A graphical aid to the interpretation and validation of cluster analysis},
+  author  = {Rousseeuw, Peter J.},
+  journal = {Journal of Computational and Applied Mathematics},
+  volume  = {20},
+  pages   = {53--65},
+  year    = {1987},
+}
+
+@article{schwarz1978bic,
+  title   = {Estimating the dimension of a model},
+  author  = {Schwarz, Gideon},
+  journal = {The Annals of Statistics},
+  volume  = {6},
+  number  = {2},
+  pages   = {461--464},
+  year    = {1978},
+}
+
+% -----------------------------------------------------------------
+%  Model families used in the bakeoff
+% -----------------------------------------------------------------
+
+@article{breiman2001random,
+  title   = {Random Forests},
+  author  = {Breiman, Leo},
+  journal = {Machine Learning},
+  volume  = {45},
+  number  = {1},
+  pages   = {5--32},
+  year    = {2001},
+}
+
+@article{friedman2001greedy,
+  title   = {Greedy Function Approximation: A Gradient Boosting Machine},
+  author  = {Friedman, Jerome H.},
+  journal = {The Annals of Statistics},
+  volume  = {29},
+  number  = {5},
+  pages   = {1189--1232},
+  year    = {2001},
+}
+
+@inproceedings{chen2016xgboost,
+  title     = {{XGBoost}: A Scalable Tree Boosting System},
+  author    = {Chen, Tianqi and Guestrin, Carlos},
+  booktitle = {Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining},
+  pages     = {785--794},
+  year      = {2016},
+  publisher = {ACM},
+}
+
+@inproceedings{ke2017lightgbm,
+  title     = {{LightGBM}: A Highly Efficient Gradient Boosting Decision Tree},
+  author    = {Ke, Guolin and Meng, Qi and Finley, Thomas and Wang, Taifeng and Chen, Wei and Ma, Weidong and Ye, Qiwei and Liu, Tie-Yan},
+  booktitle = {Advances in Neural Information Processing Systems 30},
+  year      = {2017},
+}
+
+% -----------------------------------------------------------------
+%  Stacking and calibration
+% -----------------------------------------------------------------
+
+@article{wolpert1992stacked,
+  title   = {Stacked Generalization},
+  author  = {Wolpert, David H.},
+  journal = {Neural Networks},
+  volume  = {5},
+  number  = {2},
+  pages   = {241--259},
+  year    = {1992},
+}
+
+@article{breiman1996stacked,
+  title   = {Stacked regressions},
+  author  = {Breiman, Leo},
+  journal = {Machine Learning},
+  volume  = {24},
+  number  = {1},
+  pages   = {49--64},
+  year    = {1996},
+}
+
+@inproceedings{zadrozny2002transforming,
+  title     = {Transforming classifier scores into accurate multiclass probability estimates},
+  author    = {Zadrozny, Bianca and Elkan, Charles},
+  booktitle = {Proceedings of the 8th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining},
+  pages     = {694--699},
+  year      = {2002},
+}
+
+@inproceedings{niculescu2005predicting,
+  title     = {Predicting good probabilities with supervised learning},
+  author    = {Niculescu-Mizil, Alexandru and Caruana, Rich},
+  booktitle = {Proceedings of the 22nd International Conference on Machine Learning},
+  year      = {2005},
+}
+
+@article{brier1950verification,
+  title   = {Verification of forecasts expressed in terms of probability},
+  author  = {Brier, Glenn W.},
+  journal = {Monthly Weather Review},
+  volume  = {78},
+  number  = {1},
+  pages   = {1--3},
+  year    = {1950},
+}
+
+@inproceedings{guo2017calibration,
+  title     = {On calibration of modern neural networks},
+  author    = {Guo, Chuan and Pleiss, Geoff and Sun, Yu and Weinberger, Kilian Q.},
+  booktitle = {International Conference on Machine Learning},
+  pages     = {1321--1330},
+  year      = {2017},
+}
+
+% -----------------------------------------------------------------
+%  Bootstrap (used for paired confidence intervals on AUC, Brier, ROI)
+% -----------------------------------------------------------------
+
+@article{efron1979bootstrap,
+  title   = {Bootstrap methods: Another look at the jackknife},
+  author  = {Efron, Bradley},
+  journal = {The Annals of Statistics},
+  volume  = {7},
+  number  = {1},
+  pages   = {1--26},
+  year    = {1979},
+}
+
+% -----------------------------------------------------------------
+%  Autoencoders and deep-learning plumbing (used by the AE and GRU)
+% -----------------------------------------------------------------
+
+@article{hinton2006reducing,
+  title   = {Reducing the dimensionality of data with neural networks},
+  author  = {Hinton, Geoffrey E. and Salakhutdinov, Ruslan R.},
+  journal = {Science},
+  volume  = {313},
+  number  = {5786},
+  pages   = {504--507},
+  year    = {2006},
+}
+
+@article{kingma2014adam,
+  title   = {Adam: A method for stochastic optimization},
+  author  = {Kingma, Diederik P. and Ba, Jimmy},
+  journal = {arXiv preprint arXiv:1412.6980},
+  year    = {2014},
+}
+
+@inproceedings{paszke2019pytorch,
+  title     = {{PyTorch}: An imperative style, high-performance deep learning library},
+  author    = {Paszke, Adam and Gross, Sam and Massa, Francisco and Lerer, Adam and Bradbury, James and Chanan, Gregory and Killeen, Trevor and Lin, Zeming and Gimelshein, Natalia and Antiga, Luca and others},
+  booktitle = {Advances in Neural Information Processing Systems 32},
+  year      = {2019},
+}
+
+@article{cho2014learning,
+  title   = {Learning phrase representations using {RNN} encoder-decoder for statistical machine translation},
+  author  = {Cho, Kyunghyun and van Merri{\"e}nboer, Bart and Gulcehre, Caglar and Bahdanau, Dzmitry and Bougares, Fethi and Schwenk, Holger and Bengio, Yoshua},
+  journal = {arXiv preprint arXiv:1406.1078},
+  year    = {2014},
+}
+
+@inproceedings{bromley1994signature,
+  title     = {Signature verification using a ``{S}iamese'' time delay neural network},
+  author    = {Bromley, Jane and Guyon, Isabelle and LeCun, Yann and S{\"a}ckinger, Eduard and Shah, Roopak},
+  booktitle = {Advances in Neural Information Processing Systems 6},
+  year      = {1994},
+}
+
+% -----------------------------------------------------------------
+%  Rating systems
+% -----------------------------------------------------------------
+
+@book{elo1978rating,
+  title     = {The Rating of Chess Players, Past and Present},
+  author    = {Elo, Arpad E.},
+  year      = {1978},
+  publisher = {Arco Publishing},
+  address   = {New York},
+}
+
+@article{glickman1999parameter,
+  title   = {Parameter estimation in large dynamic paired comparison experiments},
+  author  = {Glickman, Mark E.},
+  journal = {Journal of the Royal Statistical Society: Series C (Applied Statistics)},
+  volume  = {48},
+  number  = {3},
+  pages   = {377--394},
+  year    = {1999},
+}
+
+@techreport{glickman2012example,
+  title       = {Example of the {Glicko-2} system},
+  author      = {Glickman, Mark E.},
+  institution = {Boston University},
+  year        = {2012},
+}
+
+% -----------------------------------------------------------------
+%  Tooling
+% -----------------------------------------------------------------
+
+@article{scikitlearn2011,
+  title   = {{Scikit-learn}: Machine learning in {Python}},
+  author  = {Pedregosa, Fabian and Varoquaux, Ga{\"e}l and Gramfort, Alexandre and Michel, Vincent and Thirion, Bertrand and Grisel, Olivier and Blondel, Mathieu and Prettenhofer, Peter and Weiss, Ron and Dubourg, Vincent and Vanderplas, Jake and Passos, Alexandre and Cournapeau, David and Brucher, Matthieu and Perrot, Matthieu and Duchesnay, {\'E}douard},
+  journal = {Journal of Machine Learning Research},
+  volume  = {12},
+  pages   = {2825--2830},
+  year    = {2011},
+}
+
+% -----------------------------------------------------------------
+%  Prior MMA / UFC outcome-prediction work (direct comparisons)
+% -----------------------------------------------------------------
+
+@incollection{hitkul2019mma,
+  title     = {A Comparative Study of Machine Learning Algorithms for Prior Prediction of {UFC} Fights},
+  author    = {Hitkul and Aggarwal, Karan and Yadav, Nishtha and Dwivedy, Maheshkumar},
+  booktitle = {Harmony Search and Nature Inspired Optimization Algorithms},
+  series    = {Advances in Intelligent Systems and Computing},
+  volume    = {741},
+  pages     = {67--76},
+  publisher = {Springer},
+  address   = {Singapore},
+  year      = {2019},
+  doi       = {10.1007/978-981-13-0761-4_7},
+}
+
+@inproceedings{yin2024mma,
+  title     = {Data-Driven {MMA} Outcome Prediction Enhanced by Fighter Styles: A Machine Learning Approach},
+  author    = {Yin, Jiajie},
+  booktitle = {Proceedings of the 4th International Conference on Machine Learning and Intelligent Systems Engineering (MLISE)},
+  year      = {2024},
+}
+
+@inproceedings{sheng2024ufc,
+  title     = {Artificial Intelligence in {UFC} Outcome Prediction and Fighter Strategies Optimization},
+  author    = {Yan, Sheng and Liu, Linjun and Ubaldo, Comite},
+  booktitle = {Proceedings of the 9th International Conference on Intelligent Information Processing (ICIIP)},
+  pages     = {96--100},
+  publisher = {ACM},
+  year      = {2024},
+  doi       = {10.1145/3696952.3696966},
+}
+
+% -----------------------------------------------------------------
+%  Data sources
+% -----------------------------------------------------------------
+
+@misc{ufckagglealibi,
+  title        = {{UFC} Fights, Fighters, and Events Dataset},
+  author       = {Alibi, Amine},
+  year         = {2024},
+  howpublished = {Kaggle},
+  note         = {Scraped from UFCStats.com},
+}
+
+@misc{ufcoddskaggle,
+  title        = {{UFC} Betting Odds},
+  author       = {{Kaggle contributors}},
+  year         = {2024},
+  howpublished = {Kaggle},
+}

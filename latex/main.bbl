@@ -1,0 +1,197 @@
+\begin{thebibliography}{30}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi:\discretionary{}{}{}#1}\else
+  \providecommand{\doi}{doi:\discretionary{}{}{}\begingroup
+  \urlstyle{rm}\Url}\fi
+
+\bibitem[{Alibi(2024)}]{ufckagglealibi}
+Alibi, Amine. 2024.
+\newblock {UFC} fights, fighters, and events dataset.
+\newblock Kaggle.
+\newblock Scraped from UFCStats.com.
+
+\bibitem[{Bishop(2006)}]{bishop2006pattern}
+Bishop, Christopher~M. 2006.
+\newblock \emph{Pattern recognition and machine learning}.
+\newblock New York: Springer.
+
+\bibitem[{Breiman(1996)}]{breiman1996stacked}
+Breiman, Leo. 1996.
+\newblock Stacked regressions.
+\newblock \emph{Machine Learning} 24(1). 49--64.
+
+\bibitem[{Breiman(2001)}]{breiman2001random}
+Breiman, Leo. 2001.
+\newblock Random forests.
+\newblock \emph{Machine Learning} 45(1). 5--32.
+
+\bibitem[{Brier(1950)}]{brier1950verification}
+Brier, Glenn~W. 1950.
+\newblock Verification of forecasts expressed in terms of probability.
+\newblock \emph{Monthly Weather Review} 78(1). 1--3.
+
+\bibitem[{Bromley et~al.(1994)Bromley, Guyon, LeCun, S{\"a}ckinger and
+  Shah}]{bromley1994signature}
+Bromley, Jane, Isabelle Guyon, Yann LeCun, Eduard S{\"a}ckinger and Roopak
+  Shah. 1994.
+\newblock Signature verification using a ``{S}iamese'' time delay neural
+  network.
+\newblock In \emph{Advances in neural information processing systems 6}.
+
+\bibitem[{Chen and Guestrin(2016)}]{chen2016xgboost}
+Chen, Tianqi and Carlos Guestrin. 2016.
+\newblock {XGBoost}: A scalable tree boosting system.
+\newblock In \emph{Proceedings of the 22nd acm sigkdd international conference
+  on knowledge discovery and data mining}, 785--794. ACM.
+
+\bibitem[{Cho et~al.(2014)Cho, van Merri{\"e}nboer, Gulcehre, Bahdanau,
+  Bougares, Schwenk and Bengio}]{cho2014learning}
+Cho, Kyunghyun, Bart van Merri{\"e}nboer, Caglar Gulcehre, Dzmitry Bahdanau,
+  Fethi Bougares, Holger Schwenk and Yoshua Bengio. 2014.
+\newblock Learning phrase representations using {RNN} encoder-decoder for
+  statistical machine translation.
+\newblock \emph{arXiv preprint arXiv:1406.1078} .
+
+\bibitem[{Dempster et~al.(1977)Dempster, Laird and Rubin}]{dempster1977em}
+Dempster, A.~P., N.~M. Laird and D.~B. Rubin. 1977.
+\newblock Maximum likelihood from incomplete data via the {EM} algorithm.
+\newblock \emph{Journal of the Royal Statistical Society: Series B
+  (Methodological)} 39(1). 1--38.
+
+\bibitem[{Efron(1979)}]{efron1979bootstrap}
+Efron, Bradley. 1979.
+\newblock Bootstrap methods: Another look at the jackknife.
+\newblock \emph{The Annals of Statistics} 7(1). 1--26.
+
+\bibitem[{Elo(1978)}]{elo1978rating}
+Elo, Arpad~E. 1978.
+\newblock \emph{The rating of chess players, past and present}.
+\newblock New York: Arco Publishing.
+
+\bibitem[{Friedman(2001)}]{friedman2001greedy}
+Friedman, Jerome~H. 2001.
+\newblock Greedy function approximation: A gradient boosting machine.
+\newblock \emph{The Annals of Statistics} 29(5). 1189--1232.
+
+\bibitem[{Glickman(1999)}]{glickman1999parameter}
+Glickman, Mark~E. 1999.
+\newblock Parameter estimation in large dynamic paired comparison experiments.
+\newblock \emph{Journal of the Royal Statistical Society: Series C (Applied
+  Statistics)} 48(3). 377--394.
+
+\bibitem[{Glickman(2012)}]{glickman2012example}
+Glickman, Mark~E. 2012.
+\newblock Example of the {Glicko-2} system.
+\newblock Tech. rep., Boston University.
+
+\bibitem[{Guo et~al.(2017)Guo, Pleiss, Sun and Weinberger}]{guo2017calibration}
+Guo, Chuan, Geoff Pleiss, Yu~Sun and Kilian~Q. Weinberger. 2017.
+\newblock On calibration of modern neural networks.
+\newblock In \emph{International conference on machine learning}, 1321--1330.
+
+\bibitem[{Hastie et~al.(2009)Hastie, Tibshirani and
+  Friedman}]{hastie2009elements}
+Hastie, Trevor, Robert Tibshirani and Jerome Friedman. 2009.
+\newblock \emph{The elements of statistical learning: Data mining, inference,
+  and prediction}.
+\newblock New York: Springer, 2nd edn.
+
+\bibitem[{Hinton and Salakhutdinov(2006)}]{hinton2006reducing}
+Hinton, Geoffrey~E. and Ruslan~R. Salakhutdinov. 2006.
+\newblock Reducing the dimensionality of data with neural networks.
+\newblock \emph{Science} 313(5786). 504--507.
+
+\bibitem[{Hitkul et~al.(2019)Hitkul, Aggarwal, Yadav and
+  Dwivedy}]{hitkul2019mma}
+Hitkul, Karan Aggarwal, Nishtha Yadav and Maheshkumar Dwivedy. 2019.
+\newblock A comparative study of machine learning algorithms for prior
+  prediction of {UFC} fights.
+\newblock In \emph{Harmony search and nature inspired optimization algorithms},
+  vol. 741, Advances in Intelligent Systems and Computing, 67--76. Singapore:
+  Springer.
+\newblock \doi{10.1007/978-981-13-0761-4_7}.
+
+\bibitem[{{Kaggle contributors}(2024)}]{ufcoddskaggle}
+{Kaggle contributors}. 2024.
+\newblock {UFC} betting odds.
+\newblock Kaggle.
+
+\bibitem[{Ke et~al.(2017)Ke, Meng, Finley, Wang, Chen, Ma, Ye and
+  Liu}]{ke2017lightgbm}
+Ke, Guolin, Qi~Meng, Thomas Finley, Taifeng Wang, Wei Chen, Weidong Ma, Qiwei
+  Ye and Tie-Yan Liu. 2017.
+\newblock {LightGBM}: A highly efficient gradient boosting decision tree.
+\newblock In \emph{Advances in neural information processing systems 30}.
+
+\bibitem[{Kingma and Ba(2014)}]{kingma2014adam}
+Kingma, Diederik~P. and Jimmy Ba. 2014.
+\newblock Adam: A method for stochastic optimization.
+\newblock \emph{arXiv preprint arXiv:1412.6980} .
+
+\bibitem[{Niculescu-Mizil and Caruana(2005)}]{niculescu2005predicting}
+Niculescu-Mizil, Alexandru and Rich Caruana. 2005.
+\newblock Predicting good probabilities with supervised learning.
+\newblock In \emph{Proceedings of the 22nd international conference on machine
+  learning}.
+
+\bibitem[{Paszke et~al.(2019)Paszke, Gross, Massa, Lerer, Bradbury, Chanan,
+  Killeen, Lin, Gimelshein, Antiga et~al.}]{paszke2019pytorch}
+Paszke, Adam, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory
+  Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga et~al.
+  2019.
+\newblock {PyTorch}: An imperative style, high-performance deep learning
+  library.
+\newblock In \emph{Advances in neural information processing systems 32}.
+
+\bibitem[{Pedregosa et~al.(2011)Pedregosa, Varoquaux, Gramfort, Michel,
+  Thirion, Grisel, Blondel, Prettenhofer, Weiss, Dubourg, Vanderplas, Passos,
+  Cournapeau, Brucher, Perrot and Duchesnay}]{scikitlearn2011}
+Pedregosa, Fabian, Ga{\"e}l Varoquaux, Alexandre Gramfort, Vincent Michel,
+  Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron
+  Weiss, Vincent Dubourg, Jake Vanderplas, Alexandre Passos, David Cournapeau,
+  Matthieu Brucher, Matthieu Perrot and {\'E}douard Duchesnay. 2011.
+\newblock {Scikit-learn}: Machine learning in {Python}.
+\newblock \emph{Journal of Machine Learning Research} 12. 2825--2830.
+
+\bibitem[{Rousseeuw(1987)}]{rousseeuw1987silhouettes}
+Rousseeuw, Peter~J. 1987.
+\newblock Silhouettes: A graphical aid to the interpretation and validation of
+  cluster analysis.
+\newblock \emph{Journal of Computational and Applied Mathematics} 20. 53--65.
+
+\bibitem[{Schwarz(1978)}]{schwarz1978bic}
+Schwarz, Gideon. 1978.
+\newblock Estimating the dimension of a model.
+\newblock \emph{The Annals of Statistics} 6(2). 461--464.
+
+\bibitem[{Wolpert(1992)}]{wolpert1992stacked}
+Wolpert, David~H. 1992.
+\newblock Stacked generalization.
+\newblock \emph{Neural Networks} 5(2). 241--259.
+
+\bibitem[{Yan et~al.(2024)Yan, Liu and Ubaldo}]{sheng2024ufc}
+Yan, Sheng, Linjun Liu and Comite Ubaldo. 2024.
+\newblock Artificial intelligence in {UFC} outcome prediction and fighter
+  strategies optimization.
+\newblock In \emph{Proceedings of the 9th international conference on
+  intelligent information processing (iciip)}, 96--100. ACM.
+\newblock \doi{10.1145/3696952.3696966}.
+
+\bibitem[{Yin(2024)}]{yin2024mma}
+Yin, Jiajie. 2024.
+\newblock Data-driven {MMA} outcome prediction enhanced by fighter styles: A
+  machine learning approach.
+\newblock In \emph{Proceedings of the 4th international conference on machine
+  learning and intelligent systems engineering (mlise)}.
+
+\bibitem[{Zadrozny and Elkan(2002)}]{zadrozny2002transforming}
+Zadrozny, Bianca and Charles Elkan. 2002.
+\newblock Transforming classifier scores into accurate multiclass probability
+  estimates.
+\newblock In \emph{Proceedings of the 8th acm sigkdd international conference
+  on knowledge discovery and data mining}, 694--699.
+
+\end{thebibliography}
