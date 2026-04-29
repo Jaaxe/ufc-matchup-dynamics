@@ -61,7 +61,7 @@ Tables produced by the exploratory stack (NB 01–17):
 * **`A_recent5_*` / `B_recent5_*`** — Same, but computed over each fighter's last five pre-fight bouts.
 * **`delta_*`** / **`mean_*`** — Matchup transforms (A − B and (A+B)/2) of any per-corner feature.
 * **`elo_pre`**, **`glicko_pre`**, **`rd_pre`** — Ratings computed by walking fights in chronological order; the "pre" suffix indicates the rating **before** the current fight is resolved.
-* **`p_heatmap_A`** — Empirical win rate of A's `Cluster_k5` vs B's `Cluster_k5` in the training window.
+* **`p_heatmap_A`** — Empirical win rate of A's `Cluster_k5` vs B's `Cluster_k5`, computed across all fights with both fighters' static GMM hard assignments available (notebook 18 builds the pivot on the full styled-fight table). It is therefore a static, retrospective cluster-pair descriptor, not a strict pre-fight feature; see Section 3.3 ("Leakage scope and feature blocks") of the thesis.
 * **`p_vegas_A`** — Implied win probability for fighter A after removing the bookmaker vig from US moneylines.
 
 ## 4. Notebook ↔ Artifact Map (quick reference)

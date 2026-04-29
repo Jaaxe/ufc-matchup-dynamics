@@ -11,7 +11,10 @@
 Alibi, Amine. 2024.
 \newblock {UFC} fights, fighters, and events dataset.
 \newblock Kaggle.
-\newblock Scraped from UFCStats.com.
+\newblock Community scrape of UFCStats.com fight, fighter, and event tables;
+  accessed via \texttt{kaggle.com} in January 2025. Used here for fight-level
+  metadata, per-fight positional striking and grappling statistics, and
+  fighter-level attributes.
 
 \bibitem[{Bishop(2006)}]{bishop2006pattern}
 Bishop, Christopher~M. 2006.
@@ -116,8 +119,13 @@ Hitkul, Karan Aggarwal, Nishtha Yadav and Maheshkumar Dwivedy. 2019.
 
 \bibitem[{{Kaggle contributors}(2024)}]{ufcoddskaggle}
 {Kaggle contributors}. 2024.
-\newblock {UFC} betting odds.
+\newblock {UFC} betting odds (multi-book historical).
 \newblock Kaggle.
+\newblock Community-maintained historical UFC betting odds dump containing both
+  moneyline rows and six-way method-of-victory props (KO/SUB/DEC for each
+  corner); accessed in January 2025. Filtered in notebook~14 to US books and
+  one row per \texttt{Fight\_Id} (latest \texttt{adding\_date}). Both moneyline
+  and method markets used in this thesis come from this same file.
 
 \bibitem[{Ke et~al.(2017)Ke, Meng, Finley, Wang, Chen, Ma, Ye and
   Liu}]{ke2017lightgbm}

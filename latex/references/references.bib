@@ -292,12 +292,33 @@
   author       = {Alibi, Amine},
   year         = {2024},
   howpublished = {Kaggle},
-  note         = {Scraped from UFCStats.com},
+  note         = {Community scrape of UFCStats.com fight, fighter,
+                  and event tables; accessed via \texttt{kaggle.com}
+                  in January 2025.  Used here for fight-level
+                  metadata, per-fight positional striking and
+                  grappling statistics, and fighter-level attributes.},
 }
 
 @misc{ufcoddskaggle,
-  title        = {{UFC} Betting Odds},
+  title        = {{UFC} Betting Odds (multi-book historical)},
   author       = {{Kaggle contributors}},
   year         = {2024},
   howpublished = {Kaggle},
+  note         = {Community-maintained historical UFC betting odds
+                  dump containing both moneyline rows and six-way
+                  method-of-victory props (KO/SUB/DEC for each
+                  corner); accessed in January 2025.  Filtered in
+                  notebook~14 to US books and one row per
+                  \texttt{Fight\_Id} (latest \texttt{adding\_date}).
+                  Both moneyline and method markets used in this
+                  thesis come from this same file.},
+}
+
+@misc{ufcstats,
+  title        = {{UFCStats.com}},
+  author       = {{Ultimate Fighting Championship}},
+  year         = {2024},
+  howpublished = {\url{http://ufcstats.com}},
+  note         = {Official source of the per-fight statistics
+                  scraped by \citet{ufckagglealibi}.},
 }
