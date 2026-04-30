@@ -249,13 +249,27 @@
   year    = {2011},
 }
 
-% -----------------------------------------------------------------
-%  Prior MMA / UFC outcome-prediction work (direct comparisons)
-% -----------------------------------------------------------------
+@article{akaike1974aic,
+  title   = {A new look at the statistical model identification},
+  author  = {Akaike, Hirotugu},
+  journal = {IEEE Transactions on Automatic Control},
+  volume  = {19},
+  number  = {6},
+  pages   = {716--723},
+  year    = {1974},
+}
+
+@misc{hackett2017mma,
+  title        = {Mixed membership martial arts: Data-driven analysis of winning martial arts styles},
+  author       = {Hackett, Sean R. and Storey, John D.},
+  year         = {2017},
+  howpublished = {MIT Sloan Sports Analytics Conference},
+  url          = {https://www.sloansportsconference.com/research-papers/mixed-membership-martial-arts-data-driven-analysis-of-winning-martial-arts-styles},
+}
 
 @incollection{hitkul2019mma,
   title     = {A Comparative Study of Machine Learning Algorithms for Prior Prediction of {UFC} Fights},
-  author    = {Hitkul and Aggarwal, Karan and Yadav, Nishtha and Dwivedy, Maheshkumar},
+  author    = {Hitkul and Aggarwal, Karmanya and Yadav, Neha and Dwivedy, Maheshwar},
   booktitle = {Harmony Search and Nature Inspired Optimization Algorithms},
   series    = {Advances in Intelligent Systems and Computing},
   volume    = {741},
@@ -275,7 +289,7 @@
 
 @inproceedings{sheng2024ufc,
   title     = {Artificial Intelligence in {UFC} Outcome Prediction and Fighter Strategies Optimization},
-  author    = {Yan, Sheng and Liu, Linjun and Ubaldo, Comite},
+  author    = {Yan, Sheng and Liu, Linjun and Comite, Ubaldo},
   booktitle = {Proceedings of the 9th International Conference on Intelligent Information Processing (ICIIP)},
   pages     = {96--100},
   publisher = {ACM},
@@ -292,26 +306,17 @@
   author       = {Alibi, Amine},
   year         = {2024},
   howpublished = {Kaggle},
-  note         = {Community scrape of UFCStats.com fight, fighter,
-                  and event tables; accessed via \texttt{kaggle.com}
-                  in January 2025.  Used here for fight-level
-                  metadata, per-fight positional striking and
-                  grappling statistics, and fighter-level attributes.},
+  url          = {https://www.kaggle.com/datasets/aminealibi/ufc-fights-fighters-and-events-dataset},
+  note         = {Dataset slug \texttt{aminealibi/ufc-fights-fighters-and-events-dataset} (Kaggle listing also titled ``UFC 2025 Dataset: Fights, Fighters \& Events''); accessed January 2025.  Community scrape of UFCStats.com fight, fighter, and event tables, used here for fight-level metadata, per-fight positional striking and grappling statistics, and fighter-level attributes.},
 }
 
 @misc{ufcoddskaggle,
-  title        = {{UFC} Betting Odds (multi-book historical)},
-  author       = {{Kaggle contributors}},
+  title        = {{UFC} Betting Odds (Daily Updated Dataset)},
+  author       = {Szocik, Jerzy},
   year         = {2024},
   howpublished = {Kaggle},
-  note         = {Community-maintained historical UFC betting odds
-                  dump containing both moneyline rows and six-way
-                  method-of-victory props (KO/SUB/DEC for each
-                  corner); accessed in January 2025.  Filtered in
-                  notebook~14 to US books and one row per
-                  \texttt{Fight\_Id} (latest \texttt{adding\_date}).
-                  Both moneyline and method markets used in this
-                  thesis come from this same file.},
+  url          = {https://www.kaggle.com/datasets/jerzyszocik/ufc-betting-odds-daily-dataset},
+  note         = {Dataset slug \texttt{jerzyszocik/ufc-betting-odds-daily-dataset}; accessed January 2025.  Historical UFC/MMA betting odds dump containing both moneyline rows and six-way method-of-victory props (KO/SUB/DEC for each corner); filtered in notebook~14 to US books and one row per \texttt{Fight\_Id} (latest \texttt{adding\_date}).  Both moneyline and method markets used in this thesis come from this file (\texttt{UFC\_betting\_odds.csv} under \texttt{data/raw/kaggle\_odds/}).},
 }
 
 @misc{ufcstats,
@@ -319,6 +324,5 @@
   author       = {{Ultimate Fighting Championship}},
   year         = {2024},
   howpublished = {\url{http://ufcstats.com}},
-  note         = {Official source of the per-fight statistics
-                  scraped by \citet{ufckagglealibi}.},
+  note         = {Official UFC statistics site; fight-level tables in this thesis are taken from the Kaggle scrape \texttt{aminealibi/ufc-fights-fighters-and-events-dataset}, accessed January 2025.},
 }
