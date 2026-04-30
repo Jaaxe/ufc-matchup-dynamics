@@ -1,5 +1,4 @@
-"""Recompute NB 24's per-upset table exactly, plus the summary cell that
-crashed because of a column-name bug (A_Emb_1 vs A_ae1)."""
+"""Offline recap of notebook 24 upset case studies (mirrors that notebook's scoring)."""
 
 import json
 import numpy as np

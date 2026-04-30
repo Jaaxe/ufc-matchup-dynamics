@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""
-Run the full analysis pipeline: all notebooks in numerical order (01–17).
-Execute from project root: python run_pipeline.py
-"""
-# Non-interactive backend for headless/scripted execution
+"""Execute notebooks 01–23 in order. Run from repo root: python run_pipeline.py."""
+
 import os
+
+# Headless matplotlib when running as a script
 os.environ.setdefault("MPLBACKEND", "Agg")
 
 import json
@@ -60,8 +59,7 @@ def run_notebook(path: Path) -> None:
 
 
 def main():
-    # Notebooks use relative paths such as ../data/processed/... — cwd must be notebooks/.
-    import os
+    # Notebooks assume cwd is notebooks/ (paths like ../data/...).
     os.chdir(NOTEBOOKS_DIR)
 
     for name in PIPELINE:

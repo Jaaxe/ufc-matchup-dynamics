@@ -1,14 +1,6 @@
-"""Shared helpers for UFC matchup / dynamics modeling (notebooks 18-23).
-
-Handles the concerns flagged in the project plan:
-    * event-date-ordered train / val / test splits (no Event_Id_x ordering)
-    * walk-forward CV folds on the train portion
-    * leakage-free rolling (pre-fight) career aggregates
-    * Elo and Glicko-2 ratings walked in chronological order
-    * parsing of raw physical attributes (height / reach / stance)
-    * last-k rolling form features + days-since-last-fight
-    * method-bucket mapping (6-way / 3-way / finish) for dynamics
-    * weight-class one-hot + matchup symmetrization helpers
+"""Helpers for the unified matchup table (notebook 18+): event-ordered splits, walk-forward folds,
+leakage-safe rolling career profiles, Elo/Glicko-2 walks, physical-attribute parsing, method buckets,
+weight-class dummies, and A/B symmetrization for training.
 """
 
 from __future__ import annotations

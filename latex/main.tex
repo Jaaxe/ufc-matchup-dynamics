@@ -35,37 +35,36 @@
 % =====================================================================
 
 ``Styles make fights'' is the most-repeated cliché in mixed martial
-arts.  Statistical models of UFC outcomes almost never encode style
-explicitly: they regress wins on per-minute strike and grapple rates
-together with physical and experiential covariates, and whatever
+arts.  Most statistical models of UFC outcomes do not encode style
+explicitly: they feed per-minute striking and grappling rates, physical
+covariates, and experiential covariates into supervised classifiers, and whatever
 residual structure style contributes is left to the classifier to
 exploit.  This thesis asks three questions of that cliché---whether
 latent fighting styles, recovered from career-level fighter profiles,
-sharpen our predictions of \emph{who} wins, \emph{how} the fight
-unfolds, and \emph{when} a favorite is vulnerable.
+sharpen our predictions of who wins, how the fight
+unfolds, and when a favorite is vulnerable.
 
-Using roughly seven thousand UFC bouts through 2024, we learn soft
-Gaussian mixture posteriors and a three-dimensional autoencoder
-embedding from career fighter profiles, attach them as descriptors
-to a chronologically walked matchup table, and evaluate downstream
+Using a unified matchup-level table built from UFC fight data and
+containing $8{,}482$ event-ordered rows through 2024 (Section~\ref{sec:repro}), we learn soft
+Gaussian mixture posteriors and an autoencoder
+embedding in \(\mathbb{R}^3\) from career-level fighter profiles, attach them as
+matchup descriptors, and evaluate downstream
 models on an event-ordered held-out test slice.  The answers to the
-three questions differ sharply in kind.  For \emph{who wins}, style
-is a marginal contributor: a Vegas-aware stack edges the market on
-AUC, Brier, and log loss with paired-bootstrap confidence intervals
-that exclude zero, but the effect is small and the non-market stack
-on its own is strictly worse than Vegas.  For \emph{how the fight
-unfolds}, style is a first-class signal: top-quintile
-GMM-posterior style divergence raises the realized finish rate by
-roughly nine
-percentage points and a hierarchical method-of-victory factorization
-cuts six-way log loss by about ten percent.  For \emph{when a
-favorite is vulnerable}, the autoencoder embedding is the largest
-non-market contributor to a residual upset detector; a de-vigged
-flat-stake ROI simulation produces a positive return on a single
+three questions differ sharply in kind.  For who wins, style
+is a marginal contributor: a Vegas-aware LR$+$HGB$+$RF stack edges the de-vigged Vegas baseline on
+AUC, Brier, and log loss once \(p_{\mathrm{vegas},A}\) is added as a meta-input, with paired-bootstrap confidence intervals
+excluding zero, but the effect is small and the same stack without Vegas
+is strictly worse than Vegas.  For how the fight
+unfolds, style is a first-class signal: top-quintile \(K = 5\)
+GMM-posterior style divergence sits roughly nine percentage points above the middle bins in realized finish rate, and a hierarchical method-of-victory factorization
+cuts six-way log loss by about ten percent.  For when a
+favorite is vulnerable, the autoencoder embedding is the largest
+non-market contributor to a residual upset detector; an exploratory de-vigged
+flat-stake ROI simulation produces a positive return at post-hoc \(\theta = 0.15\) on a single
 held-out slice, providing evidence of residual market information
 rather than a deployable betting strategy.  Style helps least where
 MMA analysts most often invoke it (who wins) and most where they
-rarely do (how fights end and where the market is wrong); the
+rarely do (how fights unfold and where the market is wrong); the
 results should be read with the caveats on data, market access, and
 threshold selection set out in Chapters~\ref{ch:upset}
 and~\ref{ch:conclusion}.
@@ -104,9 +103,8 @@ arts.  Broadcasters explain outcomes through the language of
 archetypes---striker against grappler, pressure fighter against
 counter-puncher---and attribute results to the stylistic pairing
 rather than to raw quality.  Statistical work on UFC outcomes has been
-slow to encode this intuition.  The standard pipeline regresses wins
-on per-minute striking rates, takedown accuracy, control time,
-physical attributes, and recent form
+slow to encode this intuition.  The standard pipeline feeds per-minute striking rates, takedown accuracy, control time,
+physical attributes, and recent form into supervised classifiers
 \citep{hitkul2019mma,yin2024mma,sheng2024ufc}; each
 feature enters as an independent input and whatever structure
 ``style'' contributes is left to the downstream classifier to
@@ -116,8 +114,8 @@ through hand-applied labels---``striker,'' ``grappler,''
 continuous variation in fighting behavior.  This thesis asks whether
 latent fighting styles can instead be recovered from career-level
 fighter profiles, and whether, once recovered, they sharpen our
-predictions of \emph{who} wins a fight, \emph{how} the fight unfolds,
-and \emph{when} a favorite is vulnerable.
+predictions of who wins a fight, how the fight unfolds,
+and when a favorite is vulnerable.
 
 The three questions are ordered by the difficulty with which they can
 be answered in the affirmative.  Predicting wins in a combat sport
@@ -125,7 +123,7 @@ with a roughly $55\%$ finish rate and large fighter-to-fighter
 variance is hard, and the betting market already integrates much
 public and private information.  Predicting how a fight unfolds is a
 richer task with more outcome categories in which style can leave a
-fingerprint.  Identifying upsets is easier still if genuine style
+fingerprint.  Identifying upsets is a narrower residual task if genuine style
 effects are concentrated in the tails of mismatched matchups---where
 a favorite looks dominant by every numeric feature but is
 stylistically exposed.  The rest of the thesis finds that this
@@ -134,7 +132,7 @@ ordering is the right one.
 Two methodological points shape how the empirical chapters should be
 read.  First, the style features---Gaussian mixture posteriors, the
 Hybrid Score, the autoencoder embedding, and the empirical
-style-pair heatmap---are derived from \emph{career-aggregate}
+style-pair heatmap---are derived from career-aggregate
 fighter profiles fitted once on the full corpus, and serve as
 retrospective descriptors of fighter identity rather than strict
 pre-fight predictors; the matchup-level rolling rates, Elo, and
@@ -146,21 +144,21 @@ full event-ordered test fold and a smaller Vegas-aligned subset---and
 we are careful in the tables to distinguish ``feature gain'' from
 ``subset change.''
 
-The empirical headline runs as follows.  For \emph{who wins}, a
-six-model ablation lifts AUC over a $Z$-score baseline by a few
-points, and a Vegas-aware stack edges the market itself by a small
-but statistically significant margin once $p_{\text{vegas},A}$ is
-added as a feature.  For \emph{how fights unfold}, top-quintile
-style divergence raises the finish rate by roughly nine percentage
-points, and a hierarchical method-of-victory decomposition cuts
-six-way log loss.  For \emph{when a favorite is vulnerable}, a
+The empirical headline runs as follows.  For who wins, a
+non-market feature ablation across six model families lifts held-out AUC from
+$0.600$ to $0.670$ over a $Z$-score-delta baseline, and a
+Vegas-aware LR$+$HGB$+$RF stack edges the de-vigged Vegas baseline on
+AUC, Brier, and log loss once \(p_{\mathrm{vegas},A}\) is added as a
+meta-input.  For how fights unfold, top-quintile \(K = 5\)
+GMM-posterior style divergence sits roughly nine percentage points above the middle bins in realized finish rate, and a hierarchical method-of-victory decomposition cuts
+six-way log loss.  For when a favorite is vulnerable, a
 Vegas-aware residual upset model in which the autoencoder embedding
-is the single largest non-market contributor produces a de-vigged
-flat-stake ROI whose paired-bootstrap $95\%$ CI excludes zero on a
+is the single largest non-market contributor produces an exploratory de-vigged
+flat-stake ROI whose paired-bootstrap $95\%$ CI excludes zero at post-hoc \(\theta = 0.15\) on a
 single held-out window.  Style, in short, helps make fights, but
 in a more specific sense than the cliché usually conveys: it helps
 least where MMA analysts most often invoke it (who wins) and most
-where they rarely do (how fights end and where the market is wrong).
+where they rarely do (how fights unfold and where the market is wrong).
 
 % =====================================================================
 \chapter{Background and Related Work}\label{ch:background}
@@ -176,16 +174,25 @@ recently, \citet{sheng2024ufc} benchmark random forests, gradient
 boosted decision trees, and SVMs on the Kaggle ``UFC-Master'' dataset
 and identify age difference and fight date as their most influential
 features.  Closest in spirit to the present work,
-\citet{yin2024mma} apply factor analysis to per-fight statistics,
-cluster fighters into a handful of technical styles with $k$-means,
-and feed the style assignment into an ensemble of logistic regression,
+\citet{yin2024mma} applies factor analysis to per-fight statistics,
+clusters fighters into a handful of technical styles with $k$-means,
+and feeds the style assignment into an ensemble of logistic regression,
 random forest, SVM, XGBoost \citep{chen2016xgboost}, and a shallow
 neural network, reaching $65.5\%$ accuracy and showing in an ablation
 that the style factor contributes positively.  None of these studies
 use a chronological split, a calibrated probabilistic baseline, or a
 continuous style embedding, and none compare their predictions to
-market odds.  A recurring pitfall across the body of work is
-\emph{data leakage}: career-aggregate features computed on the full
+market odds.  On the unsupervised style side,
+\citet{hackett2017mma} model MMA fighters as mixtures of ten
+data-defined prototypical martial arts styles.  Their mixed-membership
+approach is an important precedent for treating fighting style as a
+learned latent object rather than a hand label.  The present thesis
+differs by learning GMM posteriors and an autoencoder embedding from
+UFCStats career profiles, attaching those descriptors to a
+chronologically evaluated UFC prediction pipeline, and testing their
+role in winner prediction, fight dynamics, and Vegas-residual upset
+detection.  A recurring pitfall across the body of work is
+data leakage: career-aggregate features computed on the full
 dataset yield optimistically biased test metrics when the aggregation
 window includes the fight being predicted.  The present thesis
 distinguishes its features by leakage scope: rolling pre-fight
@@ -210,38 +217,37 @@ For style discovery we use two complementary representations.
 Gaussian mixture models
 \citep{bishop2006pattern,hastie2009elements,dempster1977em} are the
 soft-clustering counterpart of $K$-means: each fighter is associated
-with a posterior $\pi = (\pi_1, \ldots, \pi_K)$ over components
+with a posterior \(\pi = (\pi_1, \ldots, \pi_K)\) over components
 rather than a hard label, so hybrid fighters are represented by a
 spread posterior rather than by an arbitrary hard assignment; the
-Shannon entropy $H(\pi) = -\sum_k \pi_k \log \pi_k$ summarizes a
-fighter's ``genericity'' in a single scalar (the \emph{Hybrid Score}).
+Shannon entropy \(H(\pi) = -\sum_k \pi_k \log \pi_k\) summarizes stylistic hybridity in a single scalar (the Hybrid Score).
 A feed-forward autoencoder \citep{hinton2006reducing} implemented in
 PyTorch \citep{paszke2019pytorch} and optimized with Adam
 \citep{kingma2014adam} embeds each qualified fighter into
-$\mathbb{R}^3$; differences and means of the two corners' embeddings
+\(\mathbb{R}^3\); differences and means of the two corners' embeddings
 enter downstream models as matchup features.  Mixture posteriors
 and a low-dimensional autoencoder solve different problems: the
 mixture compresses each fighter into a soft membership over a small
 set of archetypes, while the autoencoder supplies a smooth
-$\mathbb{R}^3$ space in which two fighters with the same hard
+\(\mathbb{R}^3\) space in which two fighters with the same hard
 archetype can still sit far apart.  Chapter~\ref{ch:style} returns
 to this distinction; Chapter~\ref{ch:upset} shows that for upset
 detection the continuous embedding is doing nearly all of the style
-work.  The direct transfer of GMMs and autoencoders to per-fighter
-MMA profiles is, to our knowledge, novel.
+work.  Within that precedent, the specific combination of GMM posteriors, continuous
+autoencoder embeddings, chronological UFC outcome evaluation, and
+Vegas-residual upset testing used here has not been studied to our knowledge.
 
 Downstream, probability calibration matters whenever a model is used
 for betting or resource allocation.  We use isotonic regression
-\citep{zadrozny2002transforming,niculescu2005predicting} both as a
-post-hoc calibrator on individual models and as the meta-learner in
-a stacked ensemble \citep{wolpert1992stacked,breiman1996stacked};
+\citep{zadrozny2002transforming,niculescu2005predicting} as a
+post-hoc calibrator on individual models and on the stacked ensemble output; the stacked ensemble itself uses a logistic meta-learner over selected base-model probabilities \citep{wolpert1992stacked,breiman1996stacked};
 calibration quality is reported as expected calibration error
 \citep{guo2017calibration} alongside the Brier score
 \citep{brier1950verification}.  For significance testing on paired
 metrics we use the nonparametric paired bootstrap
 \citep{efron1979bootstrap}, which yields percentile CIs and two-sided
 $p$-values without parametric assumptions.  For interpretability we
-report \emph{grouped} permutation importance
+report grouped permutation importance
 \citep{breiman2001random} over semantic
 feature families---rolling rates, style posteriors, embeddings,
 ratings, physicals, Vegas---shuffling an entire group rather than
@@ -256,59 +262,58 @@ LightGBM \citep{ke2017lightgbm} used where noted.
 
 \section{Data sources}
 
-The primary dataset is the \emph{UFC Fights, Fighters, and Events}
-Kaggle scrape of UFCStats \citep{ufckagglealibi}: fight-level
+The primary dataset is the UFC Fights, Fighters, and Events
+Kaggle scrape of UFCStats \citep{ufcstats,ufckagglealibi}: fight-level
 metadata (date, method, round, duration), per-fight positional
 striking and grappling statistics, and fighter-level attributes
 (date of birth, height, reach, stance, weight class).  After
-cleaning, the merged table contains roughly seven thousand fights
-from 1993 through 2024.  For the Vegas baselines we use a
+cleaning, the merged fight-level scrape contains on the order
+of seven thousand distinct UFC bouts from 1993 through 2024; all
+supervised results in later chapters instead use a single
+matchup-level feature table of $8{,}482$ event-ordered rows
+($4{,}846{+}1{,}786{+}1{,}850$ train/validation/test;
+Section~\ref{sec:repro}).  For the Vegas baselines we use a
 community-maintained betting-odds Kaggle dump
 \citep{ufcoddskaggle}, which contains both moneylines and
 six-way method-of-victory props (KO/SUB/DEC for each corner).
 Moneyline rows are filtered to US books and one row per fight
 (latest \texttt{adding\_date}), with de-vigged implied probabilities
-$p_{\text{vegas},A} = o_A^{-1} / (o_A^{-1} + o_B^{-1})$.
+\(p_{\mathrm{vegas},A} = o_A^{-1} / (o_A^{-1} + o_B^{-1})\).
 Method-of-victory probabilities are constructed as
 $p_k = o_k^{-1}/\sum_{k'} o_{k'}^{-1}$ over the six method buckets,
 i.e.\ proportional de-vigging across the multinomial outcome; the
-binary $p_{\text{finish}}^{\text{vegas}}$ used in
+binary \(p_{\mathrm{finish}}^{\mathrm{vegas}}\) used in
 Chapter~\ref{ch:dynamics} is the sum of the four KO and SUB cells.
-Moneyline coverage is partial ($\approx 40\%$ of all fights,
-$\approx 60\%$ of test-era fights, $n=1{,}129$ on the test slice);
-method-of-victory coverage is similar but not identical
-($\approx 4{,}867$ of $8{,}482$ fights, $n=1{,}827$ on the test
-slice).  Every Vegas-using analysis below names which subset it
-runs on.
+The moneyline and method-prop columns come from the same Kaggle dump, but completeness differs after cleaning and merging.  Thus the Vegas win-loss subset (\(n = 1{,}129\) on test) is not a superset of the finish-Brier subset (\(n = 1{,}827\)): some rows retain complete method prices even when the curated moneyline join fails, while some moneyline rows lack usable method fields.  Every Vegas-using analysis below names its subset.
 
 \section{Pre-fight feature construction}
 
 The matchup-level pipeline is built around a rolling pre-fight
 aggregator that snapshots each fighter's cumulative career averages
-\emph{before} incorporating the current bout.  Output columns include
+before incorporating the current bout.  Output columns include
 pre-fight per-minute rates (significant strikes, takedowns,
 submission attempts, control ratio, positional striking shares), KO
 and submission rates for and against, and five-fight recent form.
 Because the aggregates at fight $t$ strictly exclude fight $t$ and
 all subsequent fights, rolling columns are never contaminated by the
-outcome they are used to predict---the single most common
-optimistic-bias bug in published MMA models.  Per-minute rates are
-$Z$-scored \emph{within weight class} to remove division-specific
+outcome they are used to predict---a common source of optimistic bias
+in MMA prediction models.  Per-minute rates are
+$Z$-scored within weight class to remove division-specific
 baselines.  Elo ratings are walked with a standard specification
 (initial $1500$, $K = 32$, logistic scale $400$;
 \citealp{elo1978rating}) and Glicko-2 with monthly rating periods and
-$\tau = 0.5$ \citep{glickman2012example}; pre-fight $(R_A, R_B)$,
+\(\tau = 0.5\) \citep{glickman2012example}; pre-fight $(R_A, R_B)$,
 their difference, and Glicko-2 rating deviations are attached as
 features.
 
-A single artefact, \texttt{ufc\_matchup\_features.csv}, gathers every
+A single artifact, \texttt{ufc\_matchup\_features.csv}, gathers every
 column used downstream: identifiers, rolling rates for both corners
-plus $\delta$ and $\mu$ transforms, $K{=}3$ and $K{=}5$ GMM
+plus $\delta$ and $\mu$ transforms, \(K = 3\) and \(K = 5\) GMM
 posteriors and Hybrid Scores, the three-dimensional autoencoder
 embedding, physicals and weight-class one-hots, Elo and Glicko-2
 ratings, an empirical style-pair heatmap probability
-$p_{\text{heatmap},A}$ (the marginal $K{=}5$ cluster-pair win rate
-described in Section~\ref{sec:heatmap}), and $p_{\text{vegas},A}$
+\(p_{\mathrm{heatmap},A}\) (the marginal \(K = 5\) cluster-pair win rate
+described in Section~\ref{sec:heatmap}), and \(p_{\mathrm{vegas},A}\)
 where available.  A \texttt{split} column $\in \{\text{train},
 \text{val}, \text{test}\}$ from an event-ordered $60/20/20$ cut
 ensures every downstream model shares the same training, validation,
@@ -331,21 +336,19 @@ Glicko-2 rating columns, and the matchup transforms of these.  At
 fight $t$ these columns use only fights strictly before $t$.
 
 \item \textbf{Career-aggregate (retrospective).}  The GMM posteriors
-$\pi^{(K=3)}$ and $\pi^{(K=5)}$, the Hybrid Score $H(\pi)$, the
-hard $K{=}5$ cluster label, the autoencoder embedding $z\in
-\mathbb{R}^3$, the within-weight-class $Z$-scored rate columns
+\(\pi^{(K = 3)}\) and \(\pi^{(K = 5)}\), the Hybrid Score \(H(\pi)\), the
+hard \(K = 5\) cluster assignment, the autoencoder embedding \(z\in \mathbb{R}^3\), the within-weight-class $Z$-scored rate columns
 \texttt{*\_Z}, and the style-pair heatmap probability
-$p_{\text{heatmap},A}$.  These are computed once from the
+\(p_{\mathrm{heatmap},A}\).  These are computed once from the
 fighter-level table of career aggregates produced by notebook~05;
 they are static fighter-level (or cluster-pair) descriptors and at
 fight $t$ they reflect each fighter's full UFC career, not only the
 fights before $t$.
 
-\item \textbf{Concurrent.}  $p_{\text{vegas},A}$ is the de-vigged
+\item \textbf{Concurrent.}  \(p_{\mathrm{vegas},A}\) is the de-vigged
 moneyline implied probability at fight time and is by construction
 pre-fight; the method-of-victory implied probabilities used in
-Chapter~\ref{ch:dynamics} are likewise pre-fight at the level of the
-individual market.
+Chapter~\ref{ch:dynamics} are likewise pre-fight market quantities.
 \end{itemize}
 
 The static block matters most for Chapter~\ref{ch:style}'s style
@@ -353,38 +356,42 @@ discovery (which is a description of fighter identity and is
 naturally pooled across the career) and for downstream models that
 use the style block as a covariate.  The cleanest way to read those
 downstream results is therefore as evidence that fighter style,
-\emph{as captured by a stable career-level summary}, carries
+as captured by a stable career-level summary, carries
 predictive information about future fight outcomes; the full
 strict-pre-fight version of the style features---refit on
-expanding-window or rolling pre-fight statistics so that fighter
-$A$'s embedding at time $t$ uses only fights $<t$---would be the
+expanding-window or rolling pre-fight statistics so that each
+fighter's embedding at time $t$ uses only fights $<t$---would be the
 deployable extension, which we leave to follow-up work.  The
 case-study chapter (Chapter~\ref{ch:cases}) does refit the
-\emph{supervised} model prospectively for each historical event,
+supervised model prospectively for each historical event,
 but the style features it pulls in remain static.
 
 Two further design choices are deliberate.  The mirrored rows in
 the training set keep models from learning a corner convention; the
 unmirrored rows in test make every fight count once.  The
 fighter-level cluster and embedding tables are not split because
-fitting a Gaussian mixture on a $60\%$ slice of fighters and
-extrapolating to the remaining $40\%$ does not change what fighter
-$X$ looks like in $\mathbb{R}^3$; what changes is how prospectively
-we are willing to call those features ``known at fight time,'' which
-is what Section~\ref{sec:leakage-scope} clarifies.
+Chapter~\ref{ch:style} is a retrospective description of fighter
+identity rather than a new-fighter generalization experiment.
+Refitting the representation on an expanding pre-fight window would
+answer the stricter deployability question; here,
+Section~\ref{sec:leakage-scope} clarifies that the static style
+features should be read as career-level descriptors, not as features
+known prospectively at every fight date.
 
 \section{Reproducibility and selection discipline}\label{sec:repro}
 
+\paragraph{Code and data.}  Analysis notebooks, feature-table construction, and bootstrap scripts are available at \url{https://github.com/Jaaxe/ufc-matchup-dynamics} (see also \texttt{README.md} and \texttt{run\_pipeline.py} in the repository root).
+
 \paragraph{Splits.}  An event-ordered $60/20/20$ cut produces
-$4{,}846$ train fights, $1{,}786$ validation fights, and $1{,}850$
-test fights at the matchup-table level.  Restricting to fights with
+$4{,}846$ train rows, $1{,}786$ validation rows, and $1{,}850$
+test rows at the matchup-table level.  Restricting to rows with
 de-vigged moneylines yields a Vegas-aligned test subset of $1{,}129$
-fights; restricting further to fights with the full six-way
+rows; separately restricting to rows with the full six-way
 method-of-victory market yields $1{,}827$ test rows for the
 finish-Brier comparison in Chapter~\ref{ch:dynamics}.
 
 \paragraph{What is fit on what.}  The fighter-level GMM, autoencoder,
-and the $K{=}5$ heatmap are fit \emph{once} on the static career
+and the \(K = 5\) heatmap are fit once on the static career
 table, with the leakage caveat in Section~\ref{sec:leakage-scope}.
 For each supervised model in Chapters~\ref{ch:matchup}--\ref{ch:upset},
 hyperparameters and family choices are tuned on \texttt{val} (paired
@@ -394,11 +401,11 @@ evaluated once.
 
 \paragraph{What is selected after seeing test.}  Two choices were
 made after looking at test outputs and we flag them as exploratory.
-First, the upset threshold $\theta = 0.15$ in
+First, the upset threshold \(\theta = 0.15\) in
 Chapter~\ref{ch:upset}'s ROI simulation is the smallest grid value
 at which the bootstrap CI excludes zero; the table reports a grid
 $\{0.05, 0.10, 0.15, 0.20\}$ but the headline number depends on
-$\theta = 0.15$ being the chosen threshold.  Second, the
+\(\theta = 0.15\) being the chosen threshold.  Second, the
 case-study panel of Chapter~\ref{ch:cases} is a curated list of
 five famous historical upsets---selected by canonical fame, not by
 residual rank---and is presented as illustrative rather than as a
@@ -411,7 +418,7 @@ delta is the strongest raw correlate of the outcome
 ($\rho \approx 0.07$ and $0.03$); and a naïve hand-engineered
 ``style clash'' score correlates at essentially zero with who wins.
 This foreshadows the thesis's central pattern: style will matter
-more for \emph{how} a fight unfolds than for the top-line outcome.
+more for how a fight unfolds than for the top-line outcome.
 
 \begin{figure}[ht]
 \centering
@@ -419,8 +426,7 @@ more for \emph{how} a fight unfolds than for the top-line outcome.
 \caption{Matchup-level correlation matrix of A$-$B deltas with the
 win and finish indicators.  Strike-volume delta is the largest raw
 correlate of winning ($\rho = 0.19$); the ``style clash'' score is
-near zero with the outcome but, as Chapter~\ref{ch:dynamics} shows,
-carries substantial signal for the method of victory.
+near zero with the outcome; Chapter~\ref{ch:dynamics} shows that style divergence is more informative for finish and method than for the top-line winner.
 Source: notebook~07.}
 \label{fig:matchup-corr}
 \end{figure}
@@ -429,21 +435,19 @@ Source: notebook~07.}
 \chapter{Discovering Fighting Styles}\label{ch:style}
 % =====================================================================
 
-Style discovery operates on a fighter-level profile $x \in
-\mathbb{R}^7$ summarizing each qualified fighter's career: the
+Style discovery operates on a fighter-level profile \(x \in \mathbb{R}^7\) summarizing each qualified fighter's career: the
 $Z$-scored per-minute rates of significant strikes, takedown
 attempts, and submission attempts, the control-time ratio, and the
 three positional shares of striking (distance, clinch, ground).
-Fighters with fewer than five UFC bouts are excluded as too noisy to
-support a stable assignment.  The same seven features feed all three
+These seven features were chosen to isolate fighting behavior rather than fighter quality: they cover striking activity, grappling initiative, submission threat, control, and positional mode of engagement while excluding ratings, physical attributes, odds, and outcome variables.
+Fighters with fewer than five UFC bouts are excluded because career-level per-minute rates are highly unstable at very small sample sizes; five fights is a practical cutoff that reduces one-fight noise while preserving enough fighters for clustering.  The same seven features feed all three
 representations below---$K$-means, Gaussian mixtures, and an
 autoencoder---so that any difference between representations reflects
 model choice rather than feature engineering.
 
 As stated in Section~\ref{sec:leakage-scope}, the GMM and the
 autoencoder are fit once on the full career-aggregate table; the
-$K=5$ hard labels used by the style-pair heatmap are derived from
-the GMM posteriors at \texttt{argmax}.  All of these descriptors
+hard \(K = 5\) assignments used by the style-pair heatmap are maximum-posterior assignments under the fitted \(K = 5\) GMM.  All of these descriptors
 are attached to the matchup table as static fighter-level (or
 cluster-pair) features.  In this chapter that scope is
 appropriate: we are describing fighter identity and asking whether
@@ -454,25 +458,15 @@ resulting numbers in that light.
 
 \section{GMM posteriors and autoencoder embeddings}
 
-A $K$-means baseline with $K \in \{4,5,6\}$ selects $K = 5$ by
-silhouette \citep{rousseeuw1987silhouettes} and serves downstream
-only as the backing label set of the style-pair heatmap below.  The
-representations we actually use in
-Chapters~\ref{ch:matchup}--\ref{ch:cases} are soft.  Gaussian
-mixtures with full covariance are fit at $K \in \{2,\ldots,8\}$ and
-selected by AIC/BIC \citep{schwarz1978bic}; we persist $K=3$ and
-$K=5$ posteriors $\pi = (\pi_1,\ldots,\pi_K)$ via the EM algorithm
-\citep{dempster1977em} together with the Hybrid Score
-$H(\pi) = -\sum_k \pi_k \log \pi_k$.  Low $H$ flags specialists with
-near-degenerate posteriors; high $H$ flags generalists whose mass is
-spread across components.  A feed-forward autoencoder
-$7 \to 32 \to 3 \to 32 \to 7$ with ReLU activations, trained with
-Adam \citep{kingma2014adam} to minimize reconstruction MSE in
-PyTorch \citep{paszke2019pytorch}, provides a continuous companion
-representation.
+We use $K$-means only as an exploratory diagnostic for hard archetype structure, not as the source of the downstream style features.  Notebook~08 compares $K \in \{4,5,6\}$ using silhouette scores and centroid profiles \citep{rousseeuw1987silhouettes}.  In the saved run, silhouette is highest at \(K = 4\), so \(K = 5\) is not a mechanical silhouette optimum; instead, a five-component resolution provides a more interpretable intermediate taxonomy for descriptive figures and the style-pair heatmap.  The persisted soft style features come from Gaussian mixtures.  Notebook~09 fits full-covariance Gaussian mixtures for each $K \in \{1,\ldots,10\}$, evaluates AIC and BIC \citep{akaike1974aic,schwarz1978bic,hastie2009elements} (lower is better), and plots both against $K$.  BIC is minimized at \(K = 3\), while AIC is minimized at \(K = 10\), illustrating the usual tension between parsimony and finer-grained fit; the latter would be harder to interpret and would make the style-pair heatmap sparser.  Notebook~10 therefore fits and archives \(K = 3\) and \(K = 5\) mixtures: \(K = 3\) is the BIC-backed parsimonious resolution, and \(K = 5\) is the interpretable intermediate taxonomy used for the style-pair heatmap, maximum-posterior hard \(K = 5\) cluster assignments under the fitted mixture, and most figures in later chapters.  Posteriors \(\pi = (\pi_1,\ldots,\pi_K)\)
+from EM-fitted mixtures \citep{dempster1977em} enter downstream
+models together with the Hybrid Score
+\(H(\pi) = -\sum_k \pi_k \log \pi_k\).  Low \(H\) flags specialists with
+near-degenerate posteriors; high \(H\) flags generalists whose mass is
+spread across components.  A feed-forward autoencoder with architecture $7 \to 32 \to 3 \to 32 \to 7$ and ReLU activations provides a continuous companion representation.  The three-dimensional bottleneck is deliberately low-capacity: it is small enough to force compression and permit visualization, but large enough to preserve within-archetype variation that the discrete mixture collapses.  The model is trained with Adam \citep{kingma2014adam} to minimize reconstruction MSE in PyTorch \citep{paszke2019pytorch}.
 
-The two are complementary by construction.  A $K=5$ mixture commits
-to five archetypes: each fighter's posterior $\pi$ lives on the
+The two are intended to be complementary.  A \(K = 5\) mixture commits
+to five archetypes: each fighter's posterior \(\pi\) lives on the
 five-component simplex, and roughly $70\%$ of posterior mass
 concentrates near simplex vertices, so for most fighters the
 mixture behaves as a discrete archetype with a small amount of
@@ -481,19 +475,14 @@ near-vertex posterior are by construction nearly identical to the
 mixture, even when their underlying behavior differs along
 dimensions the mixture does not separate (e.g., two ``baseline
 generalist'' fighters who differ markedly in distance-vs-clinch
-share).  The autoencoder, trained to reconstruct the full
-$\mathbb{R}^7$ profile, has no such commitment: its
-three-dimensional bottleneck is a smooth manifold of style, and
-distances inside it can resolve within-cluster variation that the
-mixture posterior collapses.  This bridge is what allows the upset
+share).  The autoencoder has no such commitment: it learns a smooth low-dimensional style space in which distances can resolve within-cluster variation that the mixture posterior collapses.  This bridge is what allows the upset
 chapter (Chapter~\ref{ch:upset}) to find the autoencoder embedding
 the largest non-market style contributor while finding the GMM
-posteriors near-redundant: in the bettable tail, what matters is
+posteriors near-redundant: in the high-residual tail, what matters is
 how far apart two fighters are in continuous style space, which is
 information the soft mixture has discarded.
 
-Figure~\ref{fig:gmm-profiles} shows the $Z$-score centroid profile
-of each $K=5$ component.  The five clusters are interpretable:
+Figure~\ref{fig:gmm-profiles} shows spider (radar) plots of the \(K = 5\) centroid $Z$-score profiles---one panel per component, shared angular axes---so values along each spoke are centroid Z-scores relative to the population mean, with all panels plotted on the same radial scale.  The five clusters are interpretable:
 \textbf{Cluster 0} ($n=60$) is the submission-leaning grappler
 ($+1.36\sigma$ submissions, $-0.86\sigma$ strikes);
 \textbf{Cluster 1} ($n=279$) is the active distance striker
@@ -507,11 +496,8 @@ $+0.84\sigma$ submissions).
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.78\textwidth]{gmm_profiles_k5.png}
-\caption{Centroid $Z$-score profiles of the $K=5$ Gaussian mixture:
-submission-leaning grappler (0), active distance striker (1),
-low-activity (2), baseline generalist (3), takedown-heavy wrestler
-(4).  Source: notebook~10.}
+\includegraphics[width=0.88\textwidth]{gmm_profiles_k5.png}
+\caption{Spider (radar) plots of centroid $Z$-score profiles for the \(K = 5\) Gaussian mixture: one panel per mixture component, common radial scale across panels, and ring labels read relative to the population mean (zero is average); submission-leaning grappler (0), active distance striker (1), low-activity (2), baseline generalist (3), takedown-heavy wrestler (4).  Source: notebook~10.}
 \label{fig:gmm-profiles}
 \end{figure}
 
@@ -527,32 +513,32 @@ a formal validation: the panel is small, hand-picked, and labeled
 with informal expert intuition rather than tested against a
 held-out outcome.
 
-Three patterns emerge.  \emph{First,} fighters described as
+Three patterns emerge.  First, fighters described as
 universally similar cluster together: Khabib Nurmagomedov, Islam
 Makhachev, and Georges St-Pierre all land in Cluster~4 (takedown
 wrestler) with Amanda Nunes and Randy Couture, and Max Holloway,
 Jose Aldo, Conor McGregor, Israel Adesanya, and Alex Pereira all
-land in Cluster~1 (distance striker).  \emph{Second,} stylistically
+land in Cluster~1 (distance striker).  Second, stylistically
 distinct era-defining champions separate: Khabib, Holloway, and
-Francis Ngannou fall into three distinct $K=5$ clusters.
-\emph{Third,} the Hybrid Score ranks generalists at the top of the
+Francis Ngannou fall into three distinct \(K = 5\) clusters.
+Third, the Hybrid Score ranks generalists at the top of the
 panel: Georges St-Pierre, Demetrious Johnson, Henry Cejudo, and
 Daniel Cormier---the four fighters most routinely cited as the
 sport's most complete generalists---sit in the upper quintile of
-$H(\pi)$, while Khabib ($H \approx 0.07$) and Ngannou
-($H \approx 0.21$) sit at the bottom.
+\(H(\pi)\), while Khabib (\(H \approx 0.07\)) and Ngannou
+(\(H \approx 0.21\)) sit at the bottom.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.88\textwidth]{ae_champions.png}
 \caption{Three-dimensional autoencoder style space with twenty-five
-annotated UFC champions, colored by $K=5$ hard assignment.  Khabib,
+annotated UFC champions, colored by \(K = 5\) hard assignment.  Khabib,
 Makhachev, and GSP cluster with other wrestler-dominant fighters;
 Holloway, Aldo, McGregor, Adesanya, and Pereira cluster with other
 kickboxing-style strikers; generalists such as Jon Jones,
 Volkanovski, Johnson, and Cejudo fall in the baseline cluster
 between.  A companion text table mapping each named champion to
-their $K=5$ cluster appears in Section~\ref{sec:champion-validation};
+their \(K = 5\) cluster appears in Section~\ref{sec:champion-validation};
 the labels in this 3D figure are intentionally compact and the
 table is the canonical reference.  Source: notebook~25.}
 \label{fig:ae-champions}
@@ -561,14 +547,14 @@ table is the canonical reference.  Source: notebook~25.}
 \begin{table}[ht]
 \centering
 \caption{Champion-to-cluster mapping for the panel in
-Figure~\ref{fig:ae-champions} ($K=5$ hard assignment).  Cluster
+Figure~\ref{fig:ae-champions} (\(K = 5\) hard assignment).  Cluster
 names follow Figure~\ref{fig:gmm-profiles}: 1 = active distance
 striker, 3 = baseline generalist, 4 = takedown wrestler.}
 \label{tab:champion-cluster-map}
 \small
 \begin{tabular}{ll}
 \toprule
-$K=5$ cluster & Champions in panel \\
+\(K = 5\) cluster & Champions in panel \\
 \midrule
 1: distance striker & Holloway, Aldo, McGregor, Adesanya, Pereira \\
 3: baseline generalist & Jones, Volkanovski, Dillashaw, Cejudo, Johnson, \\
@@ -582,11 +568,10 @@ $K=5$ cluster & Champions in panel \\
 Two observations are worth flagging for later chapters.  First, the
 champion panel is dominated by Cluster~3: twelve of the twenty-five
 champions sit there.  The modal archetype of a modern UFC champion
-is not ``striker'' or ``wrestler'' but \emph{generalist}.  Second,
+is not ``striker'' or ``wrestler'' but generalist.  Second,
 the representation occasionally contradicts the fan label.
 Ngannou---described by fans as a one-shot power puncher and
-``expected'' to cluster with the strikers---lands in Cluster~3
-because his fights end so quickly (average duration under six
+``expected'' to cluster with the strikers---lands in Cluster~3, likely because his fights end so quickly (average duration under six
 minutes) that his per-minute striking and grappling rates regress
 to the population mean.  This is an honest quirk of the feature
 space: per-minute normalization is what makes the representation
@@ -596,30 +581,30 @@ looks average on per-minute rates.
 
 \section{Style-pair interactions and a first null result}\label{sec:heatmap}
 
-With hard $K=5$ labels in hand we tabulate the empirical win rate
+With hard \(K = 5\) assignments in hand we tabulate the empirical win rate
 $w_{ij}$ of Cluster~$i$ versus Cluster~$j$
 (Figure~\ref{fig:style-heatmap}).  The heatmap is predominantly near
 $0.5$: style alone is a weak unconditional predictor of the outcome,
 consistent with the near-zero correlation of the ``style clash''
 score with winning in \fref{fig:matchup-corr}.  Off-diagonal cells
-display larger asymmetries, but \emph{many of those cells contain
-only a handful of fights}: the largest cell-level asymmetries
+display larger asymmetries, but many of those cells contain
+only a handful of fights: the largest cell-level asymmetries
 typically involve fewer than thirty bouts and would not survive
 straightforward exact-test corrections at conventional levels.  The
 heatmap should accordingly be read descriptively---as a compact
 catalog of where the historical record is balanced and where it
 appears to lean---and not as significance-tested evidence that one
 style beats another.  Its row probabilities are attached to the
-unified matchup table as the $p_{\text{heatmap},A}$ feature, where
+unified matchup table as the \(p_{\mathrm{heatmap},A}\) feature, where
 they enter only as one column among many; the upset model
 (Chapter~\ref{ch:upset}) finds the heatmap-minus-Vegas residual
-\emph{below} chance as a stand-alone signal, which is consistent
+below chance as a stand-alone signal, which is consistent
 with the descriptive framing here.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.78\textwidth]{style_heatmap.png}
-\caption{Empirical win rate of $K=5$ style A (row) versus $K=5$
+\caption{Empirical win rate of \(K = 5\) style A (row) versus \(K = 5\)
 style B (column), with fight counts per cell.  Predominantly near
 $0.5$, consistent with style being a weak unconditional predictor;
 many off-diagonal cells have small counts and should be read
@@ -630,11 +615,11 @@ descriptively.  Source: notebook~11.}
 A related and sharper test asks whether hybrid generalists
 systematically outperform specialists because their opponents
 ``cannot game-plan'' against them.  Binning fighters into quintiles
-of $H(\pi)$ at $K=5$ (Figure~\ref{fig:hybrid-winrate}) produces no
+of \(H(\pi)\) at \(K = 5\) (Figure~\ref{fig:hybrid-winrate}) produces no
 bucket more than $1.5$ percentage points from $50\%$.  At the
 population level the hybrid-beats-specialist hypothesis is
-\emph{not} supported.  The null is sharper than it looks: the same
-question for \emph{how} a fight ends and for \emph{when} a favorite
+not supported.  The null is sharper than it looks: the same
+question for how a fight unfolds and for when a favorite
 is mispriced will return real, positive effects later, so what the
 data rule out is specifically the claim that hybridness translates
 into higher win rates in the aggregate---not the broader claim that
@@ -655,12 +640,11 @@ population level.  Source: notebook~11.}
 % =====================================================================
 
 The first of the thesis's three questions is whether style sharpens
-prediction of \emph{who} wins.  The answer developed here is: yes,
-but at the margin.  A stack of six model families on the full
-non-market feature set lifts held-out AUC from $0.600$ to $0.670$
-over a $Z$-score-delta baseline, and a Vegas-aware version of the
-same stack edges the betting market itself on AUC, Brier, and log
-loss.  Neither result displaces the market; what they establish is
+prediction of who wins.  The answer developed here is: yes,
+but at the margin.  A feature ablation across six model families along the non-market feature ladder lifts held-out AUC from $0.600$ to $0.670$
+over a $Z$-score-delta baseline, and a Vegas-aware LR$+$HGB$+$RF stack
+edges the de-vigged Vegas baseline on AUC, Brier, and log
+loss when \(p_{\mathrm{vegas},A}\) is added as a fourth meta-input.  Neither result displaces the Vegas baseline; what they establish is
 that style carries marginal predictive content beyond classical
 features, and that the content survives when Vegas is already
 present---the condition under which residual upset prediction in
@@ -669,26 +653,25 @@ Chapter~\ref{ch:upset} becomes possible.
 \section{Model families and the ablation ladder}
 
 Notebook~19 fits six supervised classifiers on the unified matchup
-table: logistic regression with $\ell_2$ regularization; random
+table---$\ell_2$-regularized logistic regression (LR); random
 forests \citep{breiman2001random}; histogram-based gradient boosting
-(\citealp{friedman2001greedy}; scikit-learn
+(HGB; \citealp{friedman2001greedy}; scikit-learn
 \citealp{scikitlearn2011}); XGBoost \citep{chen2016xgboost}; LightGBM
 \citep{ke2017lightgbm}; and a two-layer MLP trained in PyTorch
-\citep{paszke2019pytorch} with Adam \citep{kingma2014adam}.
+\citep{paszke2019pytorch} with Adam \citep{kingma2014adam}---as single-model candidates along a feature ablation ladder.
 Hyperparameters are tuned on \texttt{val} and frozen before touching
 \texttt{test}; non-probabilistic outputs are isotonically calibrated
-\citep{zadrozny2002transforming} on \texttt{val}.  The feature sets
-used at each rung of the ablation ladder, the choice of model
-family per rung, the stack structure (LR + HGB + RF, isotonic
-meta-learner), and the calibration step are all selected on
-\texttt{val} and frozen before any test-set evaluation.
+\citep{zadrozny2002transforming} on \texttt{val}.
+The final stack retains LR, HGB, and RF only: a logistic regression meta-learner on \texttt{val} combines their validation-set predicted probabilities, and the stacked output is isotonic-calibrated on \texttt{val}.
+XGBoost, LightGBM (when available), and the MLP are evaluated in the bakeoff but are not included in this triplet stack.
+The feature sets at each ablation rung, single-model family choices, stack composition, and calibration steps are all selected on \texttt{val} and frozen before any test-set evaluation; Notebook~19 implements this pipeline.
 
 To quantify the marginal contribution of each feature family, every
 model is trained on a sequence of nested feature sets that add one
 group at a time.  Table~\ref{tab:ablation} reports held-out test
 AUC and Brier for the best single learner at each step.  Two test
 slices appear in the table: the full event-ordered test fold
-($n=1{,}850$) and the smaller Vegas-aligned subset ($n=1{,}129$,
+($n = 1{,}850$) and the smaller Vegas-aligned subset ($n = 1{,}129$,
 the rows for which a de-vigged moneyline is available).  We report
 the non-market rows on both slices so the reader can separate
 ``feature gain'' from ``subset change.''
@@ -698,15 +681,15 @@ the non-market rows on both slices so the reader can separate
 \caption{Held-out test AUC and Brier along the feature-ablation
 ladder; each row is the best single model at that step, selected on
 validation AUC.  The first numeric block is the full test fold
-($n=1{,}850$); the second block restricts the same trained models
-to the Vegas-aligned subset ($n=1{,}129$); the bottom block adds
-$p_{\text{vegas},A}$ as a feature.}
+($n = 1{,}850$); the second block restricts the same trained models
+to the Vegas-aligned subset ($n = 1{,}129$); the bottom block adds
+\(p_{\mathrm{vegas},A}\) as the market input.}
 \label{tab:ablation}
 \begin{tabular}{lccc}
 \toprule
 Feature set                & Subset & AUC   & Brier \\
 \midrule
-\multicolumn{4}{l}{\emph{Non-market features, full test ($n=1{,}850$)}} \\
+\multicolumn{4}{l}{Non-market features, full test (\(n = 1{,}850\))} \\
 \texttt{z\_only} (LR)      & full   & 0.600 & 0.242 \\
 \texttt{+gmm} (LR)         & full   & 0.629 & 0.243 \\
 \texttt{+ae} (LR)          & full   & 0.636 & 0.243 \\
@@ -714,27 +697,25 @@ Feature set                & Subset & AUC   & Brier \\
 \texttt{+ratings} (HGB)    & full   & 0.670 & 0.236 \\
 \texttt{full} (HGB)        & full   & 0.657 & 0.240 \\
 \midrule
-\multicolumn{4}{l}{\emph{Non-market features, Vegas-aligned subset ($n=1{,}129$)}} \\
+\multicolumn{4}{l}{Non-market features, Vegas-aligned subset (\(n = 1{,}129\))} \\
 \texttt{full} (HGB)        & vegas  & 0.695 & 0.222 \\
 Stack (LR+HGB+RF, no Vegas)& vegas  & 0.698 & 0.218 \\
 \midrule
-\multicolumn{4}{l}{\emph{Adding the market, Vegas-aligned subset ($n=1{,}129$)}} \\
+\multicolumn{4}{l}{Adding the market, Vegas-aligned subset (\(n = 1{,}129\))} \\
 \texttt{full+vegas} (stack) & vegas & 0.775 & 0.192 \\
 Vegas alone                 & vegas & 0.751 & 0.201 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The non-Vegas portion of the full-test ladder (\texttt{z\_only} to
-\texttt{full}) lifts AUC from $0.600$ to $\approx 0.670$: GMM
-posteriors ($+0.03$), autoencoder embeddings ($+0.01$), and rolling
+Along the non-market full-test ladder, validation-selected models raise AUC from
+$0.600$ to a peak of $0.670$ at the \texttt{+ratings} rung; the final \texttt{full} row is slightly lower ($0.657$).
+GMM posteriors ($+0.03$), autoencoder embeddings ($+0.01$), and rolling
 pre-fight rates ($+0.03$) are the three non-trivial contributors;
 physicals and weight-class one-hots add nothing further after
 $Z$-scoring.  Restricting the same \texttt{full} HGB model to the
 Vegas-aligned subset moves AUC from $0.657$ to $0.695$---a gain that
-reflects the easier subset (popular events have better-priced
-favorites and on average more decisive outcomes), \emph{not} a
-feature change.  Adding $p_{\text{vegas},A}$ on top of the full
+reflects subset composition rather than a feature change; the thesis does not attempt to decompose which rows drive that subset effect.  Adding \(p_{\mathrm{vegas},A}\) on top of the full
 non-market block then moves AUC from $0.698$ (Stack without Vegas,
 same subset) to $0.775$ (Stack$+$Vegas).  The reader who wants the
 ``feature-only'' improvement from non-market to Vegas-aware should
@@ -742,23 +723,24 @@ compare the two Vegas-subset rows in the middle and bottom blocks
 ($0.695\!\to\!0.775$ for HGB, or $0.698\!\to\!0.775$ for the
 stack); the reader who wants the headline improvement over the
 $Z$-score baseline should still use the full-test
-$0.600\!\to\!0.670$ figure.
+$0.600\!\to\!0.670$ ladder figure (the peak at \texttt{+ratings}, not the final \texttt{full} row).
 
 \section{Does the stack beat Vegas?}\label{sec:vegas-compare}
 
 The comparison runs on the objective label \texttt{Win\_A} so no
 circularity enters from the definition of ``favorite.''  The
-Vegas-aligned test subset contains $n = 1{,}129$ fights; both
+Vegas-aligned test subset contains \(n = 1{,}129\) rows; both
 models in the comparison are trained on the same (Vegas-aligned)
 training rows and evaluated on the same test rows.
 
 \begin{table}[ht]
 \centering
 \caption{Win-loss metrics on the Vegas-aligned held-out test subset
-($n = 1{,}129$); lower is better for Brier and log loss.  ``Stack''
-is the isotonic-stacked LR$+$HGB$+$RF ensemble without Vegas, fit
-on the Vegas-aligned training rows; ``Stack+Vegas'' is the same
-stack with $p_{\text{vegas},A}$ added as a fourth meta-input.
+(\(n = 1{,}129\)); lower is better for Brier and log loss.  ``Stack''
+is the LR$+$HGB$+$RF ensemble with a logistic meta-learner fit on
+\texttt{val} followed by isotonic calibration on \texttt{val},
+without Vegas, trained on Vegas-aligned training rows; ``Stack+Vegas'' is the same
+stack with \(p_{\mathrm{vegas},A}\) added as a fourth meta-input.
 Paired bootstrap (Stack+Vegas $-$ Vegas), $2{,}000$ resamples.}
 \label{tab:vegas-compare}
 \begin{tabular}{lccc}
@@ -776,10 +758,10 @@ $\Delta$log loss & \multicolumn{3}{l}{$-0.025$\ \ 95\% CI $[-0.046,\ -0.004]$,\ 
 \end{tabular}
 \end{table}
 
-Stack+Vegas beats Vegas alone on all three metrics at $p \le 0.05$,
+Stack+Vegas beats Vegas alone on all three metrics at \(p \le 0.05\),
 with 95\% paired bootstrap CIs that exclude zero in every case.  The
 effect is small but distinguishable from sampling noise.  Equally important,
-the pure non-market stack (``Stack'') is \emph{worse} than Vegas on
+the pure non-market stack (``Stack'') is worse than Vegas on
 every metric ($\Delta$AUC $= -0.054$ with 95\% CI
 $[-0.093,\ -0.017]$).  The positive result is therefore not ``style
 beats the book on its own'' but the sharper claim that style and
@@ -791,7 +773,7 @@ than Vegas alone and attains lower Brier, log loss, and ECE, while
 the Vegas-free models sit below the diagonal at short odds and above
 it at long odds.  Grouped permutation importance on the stacked
 model (reprised for the upset model in Chapter~\ref{ch:upset})
-confirms that $p_{\text{vegas},A}$ is by far the single most
+confirms that \(p_{\mathrm{vegas},A}\) is by far the single most
 important column; among non-market features, the rolling pre-fight
 rates and the autoencoder embedding are the two largest
 contributors.
@@ -803,53 +785,48 @@ contributors.
 for Vegas, HGB (non-Vegas features), logistic regression (full), and
 the stack with Vegas as a feature.  Right: Brier, log loss, and ECE.
 \texttt{Stack+Vegas} tracks the diagonal most closely and attains
-the lowest Brier, log loss, and ECE.  Source: notebook~20.}
+the lowest Brier, log loss, and ECE.  Legend $n$ is the full
+Vegas-aligned test count; curve points omit probability bins with
+fewer than five rows.  Source: notebook~20.}
 \label{fig:reliability-vegas}
 \end{figure}
 
-On \emph{who wins}, then, style is a supporting actor: it lifts the
+On who wins, then, style is a supporting actor: it lifts the
 feature-stack AUC by a few points above a $Z$-score baseline, is
 strictly dominated by Vegas on its own, and beats Vegas only by a
-margin whose CIs make it hard to dismiss but difficult to trumpet.
+margin whose CIs make it hard to dismiss but too small to overstate.
 Combined with the hybrid-versus-specialist null of
 Section~\ref{sec:heatmap}, the natural question is where, if
 anywhere, style decisively matters.  The next two chapters argue
-the answer is \emph{how} the fight unfolds and \emph{when} a
+the answer is how the fight unfolds and when a
 favorite is vulnerable.
 
 % =====================================================================
 \chapter{Does Style Predict How Fights Unfold?}\label{ch:dynamics}
 % =====================================================================
 
-If \emph{who} wins is the hardest of the three questions, \emph{how}
+If who wins is the hardest of the three questions, how
 a fight unfolds is the richest: duration, method of victory, and
 strike and grapple volume are all dimensions along which style can
-leave a fingerprint.  This chapter reports two findings: a
+leave a fingerprint.  This chapter reports two headline findings: a
 hierarchical factorization of the method of victory, and the
 thesis's cleanest positive style effect, found in the
-style-divergence-to-finish-rate curve.
+\(K = 5\) GMM-posterior-divergence-to-finish-rate curve.  It closes with a brief check of continuous dynamics targets.
 
 A flat six-way classifier over \{\texttt{A\_KO}, \texttt{A\_SUB},
 \texttt{A\_DEC}, \texttt{B\_KO}, \texttt{B\_SUB}, \texttt{B\_DEC}\}
 must jointly learn ``will there be a finish?'' and ``who finishes
-whom?'' from a single softmax.  We instead factor
-\[
-P(\text{outcome}) = P(\text{finish}) \cdot
-P(\text{method}\mid\text{finish}) \cdot
-P(\text{winner}\mid\text{method}),
-\]
-and train one histogram-based gradient booster
-\citep{friedman2001greedy} for each conditional.  On the held-out
+whom?'' from a single softmax.  We instead factor the six-way problem into a binary finish head, a conditional finish-method head for KO versus submission among finished fights, and winner heads conditional on the relevant branch.  Schematically, the probability of an outcome is assembled from \(P(\mathrm{finish})\), \(P(\mathrm{method}\mid \mathrm{finish})\) for finished fights, and \(P(\mathrm{winner}\mid \mathrm{branch})\) for the relevant finish or decision branch.  We train one histogram-based gradient booster
+\citep{friedman2001greedy} for each piece of this decomposition.  On the held-out
 test slice the hierarchical model attains log loss $1.94$ versus
 $2.15$ for the flat six-way HGB, a $10\%$ reduction.  The largest
-per-cell improvement is on the rare submission classes, which we
-attribute to the structure letting the model borrow strength from
+per-cell improvement is on the rare submission classes, which is consistent with the structure allowing the model to borrow strength from
 the common binary finish head rather than having to learn
 submission-specific probabilities from a handful of examples.
 
 The chapter's headline plot is the relationship between
-\emph{$K{=}5$ GMM-posterior style divergence}---the Euclidean
-distance $\lVert \pi_A - \pi_B \rVert_2$ between the two corners'
+\(K = 5\) GMM-posterior style divergence---the Euclidean
+distance \(\lVert \pi_A - \pi_B \rVert_2\) between the two corners'
 soft cluster posteriors---and the realized finish rate
 (Figure~\ref{fig:style-divergence-finish}).  Across quintiles of
 posterior divergence on fights with both posteriors observed, the
@@ -858,30 +835,28 @@ in quintiles 1 through 5; the top-quintile rate is roughly nine
 percentage points above quintiles 2 and 3, and roughly six
 percentage points above the bottom quintile.  The honest
 interpretation is therefore not ``monotone in divergence'' (the
-bottom four bins are noisy and roughly flat) but rather \emph{the
+bottom four bins are noisy and roughly flat) but rather the
 tail of stylistically mismatched fights finishes noticeably more
-often}---matching the intuition that the most decisive bouts happen
+often---consistent with the intuition that the most decisive bouts happen
 when one fighter's posterior over archetypes places mass far from
 the other's.  The continuous autoencoder version of this analysis
-on $\lVert z_A - z_B \rVert_2$ produces a qualitatively similar
-top-quintile lift; we plot the GMM-posterior version because it is
-the version the source notebook (notebook~21) actually computes for
-the saved figure.
+on \(\lVert z_A - z_B \rVert_2\) produces a qualitatively similar
+top-quintile lift; we report the GMM-posterior version because it is directly interpretable: the distance is measured between the fighters' soft archetype memberships.
 
 As a sanity check on the non-trivial finish-rate pattern, binary
 finish Brier on the test rows that have the full six-way
-method-of-victory market available ($n=1{,}827$) is $0.260$ for our
-model and $0.351$ for $p_{\text{finish}}^{\text{vegas}}$ derived
+method-of-victory market available (\(n = 1{,}827\)) is $0.260$ for our
+model and $0.351$ for \(p_{\mathrm{finish}}^{\mathrm{vegas}}\) derived
 from those method props by proportional de-vigging
-(Section~3.1).  The two numbers run on the same fights and the same
+(Section~3.1).  The two numbers run on the same rows and the same
 binary $y_{\text{finish}}$; the model's advantage on this metric is
 not merely a recoverable function of moneyline odds.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.70\textwidth]{style_divergence_finish.png}
-\caption{Observed finish rate by quintile of $K{=}5$
-GMM-posterior style divergence $\lVert \pi_A - \pi_B \rVert_2$ on
+\caption{Observed finish rate by quintile of \(K = 5\)
+GMM-posterior style divergence \(\lVert \pi_A - \pi_B \rVert_2\) on
 fights with both posteriors observed.  Quintile-wise realized
 finish rates are $0.50,\ 0.46,\ 0.47,\ 0.51,\ 0.56$; the top
 quintile sits roughly nine percentage points above the middle bins,
@@ -891,73 +866,68 @@ Source: notebook~21.}
 \end{figure}
 
 Continuous dynamics targets split cleanly into predictable and
-stubborn: takedowns ($R^2 \approx 0.18$) and submission attempts
-($R^2 \approx 0.15$) are meaningfully regressable on pre-fight
-features, while striking totals ($R^2 \approx 0.08$) and fight
-duration ($R^2 < 0$ against a weight-class-mean baseline) are
+stubborn: takedowns (\(R^2 \approx 0.18\)) and submission attempts
+(\(R^2 \approx 0.15\)) are meaningfully regressable on pre-fight
+features, while striking totals (\(R^2 \approx 0.08\)) and fight
+duration (\(R^2 < 0\) against a weight-class-mean baseline) are
 dominated by round-level variance.  Grappling activity is a stable
 career trait; striking totals are heavy-tailed in round-level shot
-counts.  On \emph{how} fights unfold, style is a first-class signal
+counts.  On how fights unfold, style is a first-class signal
 wherever the dimension of variation is structural (finish rate,
-method of victory, takedown volume) and a bit-player wherever it is
-noise-driven (strike totals, duration).  The next chapter asks
-whether this same structural signal can be exploited where a sports
-model can be both economically and inferentially honest: in
-identifying fights the market has mispriced.
+method of victory, takedown volume) and a secondary signal wherever it is noise-driven (strike totals, duration). The next chapter asks
+whether this same structural signal helps identify fights the market has mispriced, while keeping the betting interpretation economically and statistically honest.
 
 % =====================================================================
 \chapter{Does Style Help Catch Upsets?}\label{ch:upset}
 % =====================================================================
 
 Chapter~\ref{ch:matchup} established that a Vegas-aware stack edges
-Vegas alone by a small aggregate margin.  Chapter~\ref{ch:dynamics}
-established that $K{=}5$ GMM-posterior divergence cleanly tracks
+the de-vigged Vegas baseline by a small aggregate margin.  Chapter~\ref{ch:dynamics}
+established that \(K = 5\) GMM-posterior divergence cleanly tracks
 the realized finish rate, with the autoencoder version of the
 divergence producing a qualitatively similar top-quintile lift.
 The question for this chapter is
-whether the two compose: does a Vegas-aware model that uses the
+whether these two findings combine: does a Vegas-aware model that uses the
 autoencoder embedding among its features systematically flag upset
 candidates the market has mispriced---and if so, does the signal
 carry economic content?  The answer is yes on the first half and
-\emph{conditionally} yes on the second; the conditions are spelled
+conditionally yes on the second; the conditions are spelled
 out before any number is stated.
 
 \section{Residual formulation and the signal check}
 
 We train a HistGradientBoostingClassifier on the \texttt{full+vegas}
-feature set to predict \texttt{Win\_A}, isotonic on \texttt{val}, and
-score each test fight by the residual
+feature set to predict \texttt{Win\_A}, calibrate it with isotonic regression on \texttt{val}, and
+score each test row by the residual
 \[
-r \;=\; p_{\text{model}}(\text{Win}_A \mid \text{features}, p_{\text{vegas},A})
-       \;-\; p_{\text{vegas},A}.
+r \;=\; p_{\mathrm{model}}(\mathrm{Win}_A \mid \mathrm{features}, p_{\mathrm{vegas},A}) \;-\; p_{\mathrm{vegas},A}.
 \]
 Positive $r$ means the model places more mass on corner A than the
-market does.  The directional \emph{underdog-support} score flips
-sign when B is the favorite: $s = r$ if $p_{\text{vegas},A} < 0.5$,
+market does.  The directional ``underdog-support'' score flips
+sign when B is the favorite: $s = r$ if \(p_{\mathrm{vegas},A} < 0.5\),
 else $s = -r$.  A bet is placed on the Vegas underdog whenever
-$s \ge \theta$.  On the full Vegas-aligned test slice, $s$ attains
+\(s \ge \theta\).  On the full Vegas-aligned test slice, $s$ attains
 ROC-AUC $0.588$ as an upset detector with a top-decile lift of
-$1.56\times$ over the base rate.  The AUC is far from trading-grade
-in isolation but is sharp enough to support the ROI simulation
-below.  Two baseline residuals---Elo-minus-Vegas and
-heatmap-minus-Vegas---both score AUC below $0.50$, i.e.\ they would
-lose money as upset signals, so $s$ is not just a rediscovery of Elo
-or of the $K{=}5$ heatmap.
+$1.56\times$ over the base rate.  The AUC is far from sufficient for a standalone betting strategy,
+but it is sharp enough to motivate the thresholded ROI
+simulation below.  Two baseline residuals---Elo-minus-Vegas and
+heatmap-minus-Vegas---both score AUC below $0.50$, i.e.\ they are
+directionally worse than random as upset classifiers, so $s$ is not
+just a rediscovery of Elo or of the \(K = 5\) heatmap.
 
 Figure~\ref{fig:perm-importance} reports grouped permutation
 importance \citep{breiman2001random} on the trained upset model.
-Among non-market groups the \texttt{ae} group is the largest
+Among non-market groups, the autoencoder group is the largest
 contributor: shuffling the three AE columns drops validation AUC by
 more than any other group.  The rolling-rate group is next, matching
 the Chapter~\ref{ch:matchup} ablation.  The GMM soft posteriors are
 near zero, indicating redundancy with the smoother autoencoder for
 this specific task.  These two roles are not in tension: the GMM
 posterior carries non-redundant signal for finish rate
-(Chapter~\ref{ch:dynamics}'s headline plot is on $\lVert \pi_A -
-\pi_B \rVert_2$), but for upset \emph{detection} the relevant
+(Chapter~\ref{ch:dynamics}'s headline plot is on \(\lVert \pi_A - \pi_B \rVert_2\)), but for upset detection the relevant
 question is how stylistically far apart two fighters are
-\emph{after} accounting for what the market already knows.  The
-autoencoder's continuous $\mathbb{R}^3$ space resolves
+after accounting for what the market already knows.  The
+autoencoder's continuous \(\mathbb{R}^3\) space resolves
 within-cluster style differences that the soft mixture collapses to
 the same vertex region (Section~4.1's bridge), and that is the
 content the upset model is rewarding.
@@ -978,7 +948,7 @@ Source: notebook~22.}
 \section{ROI with bootstrap intervals}
 
 \paragraph{What the simulation is and is not.}  We treat the
-ROI numbers below as evidence of \emph{residual market information}
+ROI numbers below as evidence of residual market information
 in the style-aware features---not as a deployable betting
 strategy.  A deployable strategy would have to clear several bars
 the simulation does not: (i) the payouts are de-vigged implied
@@ -987,10 +957,10 @@ would be lower once the book's vig is re-applied; (ii) the
 simulation does not model line movement between scrape time and
 fight time, and it ignores book limits and stake-sizing; (iii) the
 test window is a single $20\%$ event-ordered slice, not a
-multi-year out-of-time forward test; (iv) the threshold $\theta$
-was \emph{not pre-registered}: we inspected several values on the
+multi-year out-of-time forward test; (iv) the threshold \(\theta\)
+was not pre-registered: we inspected several values on the
 test set and report multiple in Table~\ref{tab:roi}; the headline
-$\theta = 0.15$ is the smallest grid value at which the bootstrap
+\(\theta = 0.15\) is the smallest grid value at which the bootstrap
 CI excludes zero, and we therefore label the headline number
 exploratory; (v) the upset model itself uses style features that
 are static career-aggregate descriptors
@@ -999,8 +969,8 @@ naturally as ``does stable career-level style identity carry
 non-market information'' than as ``does a strict pre-fight signal
 beat the closing line.''  With those caveats firmly in front, the
 flat-stake ROI simulation is reported as follows.  For every
-test-slice fight, bet one unit on the Vegas underdog whenever
-$s \ge \theta$, receive the de-vigged decimal payout on a win, and
+test-slice row, bet one unit on the Vegas underdog whenever
+\(s \ge \theta\), receive the de-vigged decimal payout on a win, and
 lose the stake otherwise.  Paired-bootstrap $95\%$ CIs from
 $2{,}000$ resamples are reported across the threshold grid in
 Table~\ref{tab:roi}.
@@ -1008,17 +978,17 @@ Table~\ref{tab:roi}.
 \begin{table}[ht]
 \centering
 \caption{Simulated flat-stake ROI of the $s = r$ upset policy on
-the Vegas-aligned test slice, using \emph{de-vigged} (not tradable)
-implied prices.  $P(\text{ROI}\le 0)$ is the empirical probability
+the Vegas-aligned test slice, using de-vigged (not tradable)
+implied prices.  $P(\mathrm{ROI} \le 0)$ is the empirical probability
 of a non-positive resample ROI from $2{,}000$ paired bootstrap
-draws.  $\theta = 0.15$ is the headline threshold but was selected
+draws.  \(\theta = 0.15\) is the headline threshold but was selected
 post-hoc as the smallest grid value at which the CI excludes zero;
 all four rows are reported so the reader can see the threshold
 sensitivity.}
 \label{tab:roi}
 \begin{tabular}{cccccc}
 \toprule
-$\theta$ & $n_{\text{bets}}$ & Hit rate & Obs.\ ROI & 95\% CI & $P(\text{ROI}\le 0)$ \\
+\(\theta\) & $n_{\text{bets}}$ & Hit rate & Obs.\ ROI & 95\% CI & $P(\mathrm{ROI} \le 0)$ \\
 \midrule
 $0.05$ & $674$ & $0.343$ & $+3.9\%$  & $[-7.8\%,\ +15.3\%]$ & $0.27$ \\
 $0.10$ & $538$ & $0.349$ & $+9.4\%$  & $[-4.3\%,\ +23.1\%]$ & $0.10$ \\
@@ -1028,17 +998,18 @@ $0.20$ & $309$ & $0.369$ & $+23.4\%$ & $[+4.2\%,\ +43.8\%]$ & $0.01$ \\
 \end{tabular}
 \end{table}
 
-At thin thresholds ($\theta \le 0.10$) the bootstrap CI spans zero;
-at $\theta \ge 0.15$ the lower bound is positive, $P(\text{ROI}\le
-0)$ drops below $2\%$, and the hit rate rises from $0.34$ to $0.37$
-in the direction the residual's sharpness predicts.  The defensible
-claim is that on \emph{when} a favorite is vulnerable, style is
+At looser thresholds (\(\theta \le 0.10\)) the bootstrap CI spans zero;
+at \(\theta \ge 0.15\) the lower bound is positive, $P(\mathrm{ROI} \le
+0)$ drops to about $2\%$ or below, and the hit rate rises from $0.34$ to $0.37$
+in the expected direction.  The defensible
+claim is that, for the question of when a favorite is vulnerable,
+style is
 the dominant non-market contributor to a residual detector, and the
 detector produces a positive simulated return on a single held-out
-window with a paired bootstrap CI that excludes zero on three of
-four grid thresholds; this is evidence of residual market
-information rather than a deployable strategy.  A pre-registered
-out-of-time test on 2025+ events with $\theta$ locked on a
+window with paired-bootstrap CIs excluding zero at the two stricter
+thresholds, \(\theta = 0.15\) and \(\theta = 0.20\); this is evidence of
+residual market information rather than a deployable strategy.  A pre-registered
+out-of-time test on 2025+ events with \(\theta\) locked on a
 $2022$-vintage validation set is the next step
 (Chapter~\ref{ch:conclusion}).
 
@@ -1061,29 +1032,29 @@ out-of-sample evidence.
 Notebook~24 applies the unified feature table to five canonical
 upsets, fitting a fresh \texttt{HistGradientBoostingClassifier} on
 every fight strictly preceding each event's date so that each
-prospective $p_{\text{model}}$ is leakage-free at the supervised
+prospective \(p_{\mathrm{model}}\) is leakage-free at the supervised
 level; the style features that this prospective model consumes are,
 as elsewhere in the thesis, the static career-aggregate
 descriptors of Section~\ref{sec:leakage-scope}, which inherit the
-same retrospective scope.  The per-fight residuals are reported in
+same retrospective scope.  The case-study residuals are reported in
 Table~\ref{tab:cases}.
 
 \begin{table}[ht]
 \centering
-\caption{Five canonical UFC upsets, listed by event.  $p_\text{vegas}$
-and $p_\text{model}$ are reported on the eventual winner where
-available; $r = p_\text{model} - p_\text{vegas}$ is the
+\caption{Five canonical UFC upsets, listed by event.  \(p_{\mathrm{vegas}}\)
+and \(p_{\mathrm{model}}\) are reported on the eventual winner where
+available; \(r = p_{\mathrm{model}} - p_{\mathrm{vegas}}\) is the
 winner-oriented residual that Chapter~\ref{ch:upset}'s threshold
-policy would have seen.  Each $p_\text{model}$ is fit by a
+policy would have seen.  Each \(p_{\mathrm{model}}\) is fit by a
 symmetry-augmented HGB on all fights strictly preceding the event
 date.  A residual of $\ge 0.15$ would have triggered a bet under
-the $\theta = 0.15$ policy of Chapter~\ref{ch:upset}; this is the
+the \(\theta = 0.15\) policy of Chapter~\ref{ch:upset}; this is the
 same exploratory threshold flagged in Section~\ref{sec:repro}.}
 \label{tab:cases}
 \small
 \begin{tabular}{lll cccc ll}
 \toprule
-Event (yr) & Winner & Loser & $p_\text{vegas}$ & $p_\text{model}$ & $r$ & $\|z_A - z_B\|_2$ & $k_W$ & $k_L$ \\
+Event (yr) & Winner & Loser & \(p_{\mathrm{vegas}}\) & \(p_{\mathrm{model}}\) & \(r\) & \(\lVert z_A - z_B \rVert_2\) & $k_W$ & $k_L$ \\
 \midrule
 UFC 69 (2007)  & Serra     & St-Pierre & ---    & $0.05^\dagger$ & ---    & $4.07$ & $4$ & $4$ \\
 UFC 173 (2014) & Dillashaw & Barao     & $0.12$ & $0.32$         & $+0.20$ & $1.77$ & $3$ & $1$ \\
@@ -1094,11 +1065,11 @@ UFC 278 (2022) & Edwards   & Usman     & $0.27$ & $0.42$         & $+0.15$ & $3.
 \end{tabular}
 
 \smallskip
-{\footnotesize $^\dagger$~$p_\text{model}$ for Serra; Vegas
+{\footnotesize $^\dagger$~\(p_{\mathrm{model}}\) for Serra; Vegas
 moneylines are unavailable for UFC~69 in the Kaggle scrape so no
 residual is reported.  ``---'' for the Holm/Rousey row marks
 fighters whose career aggregates were too thin for a stable
-autoencoder embedding and a $K{=}5$ assignment at the time the
+autoencoder embedding and a \(K = 5\) assignment at the time the
 static style table was built (Rousey appears in the matchup table
 without an embedding or hard cluster).  Because both the
 autoencoder divergence and the loser's cluster are missing, this
@@ -1113,25 +1084,20 @@ matched to a specific claim from earlier chapters.
 \paragraph{Cross-cluster style mismatches (Dillashaw/Barao).}
 Dillashaw (Cluster~3, baseline generalist with striking-heavy
 rolling rates) and Barao (Cluster~1, active distance striker) are
-the only pair in the panel whose hard $K=5$ assignments differ and
+the only pair in the panel whose hard \(K = 5\) assignments differ and
 whose cluster-pair label is reported by the framework.  The
 residual on the eventual winner, $+0.20$, exceeds the
-$\theta = 0.15$ threshold of Chapter~\ref{ch:upset} and is the
-second-largest in the table.  We do \emph{not} include Holm/Rousey
-in this paragraph because Rousey's $K=5$ assignment is missing in
-the static style table, so the row offers no cluster-pair evidence
-either way.  The prospective model's $+0.43$ residual on Holm is
-large enough to trigger a bet under the threshold policy, but as a
-witness to a \emph{cross-cluster} mismatch the row is silent.
+\(\theta = 0.15\) threshold of Chapter~\ref{ch:upset} and is the
+second-largest in the table.  Holm/Rousey is excluded from this cross-cluster reading for the missing-style-feature reason noted in Table~\ref{tab:cases}.
 
 \paragraph{Within-cluster hidden mismatches (Edwards/Usman,
 Pena/Nunes).}  More striking for the thesis's central argument are
-the two cases whose hard $K=5$ assignments \emph{agree}: Edwards
+the two cases whose hard \(K = 5\) assignments agree: Edwards
 and Usman are both Cluster~3, and Pena and Nunes are both
 Cluster~4.  A framework that relied on discrete archetypes alone
 would describe these as same-style matchups and see no stylistic
 asymmetry.  The continuous autoencoder embedding disagrees:
-Euclidean divergences of $3.33$ and $3.49$ in $\mathbb{R}^3$ sit in
+Euclidean divergences of $3.33$ and $3.49$ in \(\mathbb{R}^3\) sit in
 the top quintile of the entire dataset, and the residuals on the
 eventual winners---$+0.15$ and $+0.26$---both clear the
 exploratory threshold.  These two cases, more than any cross-cluster
@@ -1149,41 +1115,36 @@ first-round KO is a variance event the pre-fight features cannot
 have predicted, and the framework correctly does not pretend
 otherwise.
 
-Taken together, the five rows function as a concrete anchor for the
+Taken together, the five rows give a concrete illustration of the
 population-level ROI result of Chapter~\ref{ch:upset}: all four
-cases for which a residual is computable clear $\theta = 0.15$ on
+cases for which a residual is computable clear \(\theta = 0.15\) on
 the eventual winner, and the two within-cluster pairs illustrate
 the continuous-over-discrete claim of Section~4.1 in the most
 concrete form the thesis can offer.  The honest reading is illustrative, not
 confirmatory: the panel was selected by fame, the missing values on
-Holm/Rousey limit the cross-cluster story, and these are five out of
-roughly thirty thousand UFC fights.
+Holm/Rousey limit the cross-cluster story, and the panel is tiny
+relative to the full historical UFC record.
 
 % =====================================================================
 \chapter{Discussion and Conclusion}\label{ch:conclusion}
 % =====================================================================
 
 The three empirical chapters answer the thesis's three questions
-with answers of visibly different strength.  \emph{Who wins} is the
-hardest question and the one where style helps least: the feature
-stack lifts held-out AUC by a few points above a $Z$-score baseline,
-and edges Vegas itself by a small margin once $p_{\text{vegas},A}$
-is added as a feature, with a paired null result on
+with answers of visibly different strength.  Who wins is the
+hardest question and the one where style helps least: the non-market ablation lifts held-out AUC by a few points above a $Z$-score baseline, and the Vegas-aware LR$+$HGB$+$RF stack edges the de-vigged Vegas baseline by a small margin once \(p_{\mathrm{vegas},A}\) is added as a meta-input, with a paired null result on
 hybrid-versus-specialist win rates sharpening the picture.
-\emph{How fights unfold} is where style becomes a first-class
-signal: top-quintile $K{=}5$ posterior divergence raises the finish
-rate by roughly nine percentage points (the thesis's cleanest
+How fights unfold is where style becomes a first-class
+signal: top-quintile \(K = 5\) GMM-posterior style divergence is associated with a realized finish rate roughly nine percentage points above the middle bins (the thesis's cleanest
 positive style effect), and a hierarchical method-of-victory
-decomposition cuts six-way log loss by $\sim 10\%$.  \emph{When a
-favorite is vulnerable} is where style carries the most practical
+decomposition cuts six-way log loss by $\sim 10\%$.  The upset task is where style carries the most practical
 weight: the autoencoder embedding is the largest non-market
-contributor to a residual upset detector, and a de-vigged
+contributor to a residual upset detector, and an exploratory de-vigged
 flat-stake policy returns a positive simulated ROI on a single
 $20\%$ test window with a paired bootstrap CI that excludes zero
-under the exploratory $\theta = 0.15$ threshold.  The single
-sentence summary is that \emph{style, learned directly from fight
-data, contains non-market predictive information about MMA
-outcomes, especially fight dynamics and residual upset detection}---a
+under the exploratory, post-hoc \(\theta = 0.15\) threshold.  The single-sentence
+summary is that style, learned from career-level fighter
+profiles, contains non-market predictive information about MMA
+outcomes, especially fight dynamics and residual upset detection---a
 more specific and testable version of ``styles make fights'' than
 the cliché usually conveys, and not the stronger claim that the
 model definitively beats the betting market in deployable practice.
@@ -1203,39 +1164,34 @@ record, which likely flattens the hybrid-versus-specialist test of
 Chapter~\ref{ch:style}; the prospectively defensible block is the
 rolling rates and the rating systems, and the deployable extension
 of the style block is to refit the GMM and autoencoder on
-expanding-window pre-fight statistics so that fighter $A$'s
+expanding-window pre-fight statistics so that each fighter's
 embedding at time $t$ uses only fights $<t$.  Third, the test slice
 is a single $20\%$ event-ordered window rather than a multi-year
 out-of-time test; the ROI simulation uses de-vigged implied
 probabilities and ignores line movement, book limits, and stake
-sizing, and $\theta = 0.15$ was not pre-registered.
+sizing, and \(\theta = 0.15\) was not pre-registered.
 
 \paragraph{The most valuable single extension} is therefore a
 pre-registered out-of-time test: refit the entire pipeline using
-only events through 2022, lock $\theta$ on \texttt{val} in advance,
+only events through 2022, lock \(\theta\) on \texttt{val} in advance,
 swap the static GMM/autoencoder for an expanding-window pre-fight
 fit so the style features at fight $t$ use only fights $<t$, and
 evaluate the residual upset policy on $2023$ and $2024$ separately.
 If the upset ROI survives that test, the framework moves from
-defensible statistical evidence into something approaching a
-deployable signal.  Complementary directions are quantile
+exploratory statistical evidence toward a candidate deployable signal, though a real betting strategy would still require tradable odds, vig, line movement, and limit constraints.  Complementary directions are quantile
 regression for the heavy-tailed dynamics targets; sequence models
 of style evolution---a first pass with a Siamese GRU
 \citep{bromley1994signature,cho2014learning} over the last eight
 pre-fight rounds did not beat the HGB baseline (test AUC $0.58$
-versus $0.65$), likely a sample-size issue that a non-UFC-history
-fix could address; and a causal pass at the style-pair heatmap of
+versus $0.65$), likely a sample-size issue that incorporating non-UFC history
+could address; and a causal pass at the style-pair heatmap of
 Section~\ref{sec:heatmap} that disentangles style from correlated
 attributes (reach, camp, age cohort) via matching or
-instrumental-variable designs to sharpen claims about \emph{why}
+instrumental-variable designs to sharpen claims about why
 certain styles beat certain others.  The contribution of this
 thesis across all three is a compact, leakage-scoped style
-representation that carries real non-market information about the
-parts of MMA the cliché usually gets wrong.  All analysis code, the
-unified feature table, and the paired-bootstrap scripts are
-released alongside this manuscript; see \texttt{README.md} and
-\texttt{run\_pipeline.py} in the project root for the full artefact
-map.
+representation that carries measurable non-market information about the
+parts of MMA the cliché usually gets wrong.  Code and artifact layout are in \url{https://github.com/Jaaxe/ufc-matchup-dynamics} (\texttt{README.md}, \texttt{run\_pipeline.py}).
 
 \clearpage\singlespacing
 

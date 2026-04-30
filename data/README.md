@@ -11,6 +11,8 @@ This folder contains the raw, processed, and modeling datasets for the UFC Match
 
 ### Raw Data (`/data/raw/`)
 
+Tracked paths include only `.gitkeep`; after cloning, place the Kaggle UFC export files here (see list below). Same for `processed/` until notebooks populate outputs.
+
 * `raw_fighters.csv` — Fighter profiles (height, reach, stance, DOB).
 * `raw_fights.csv` — Fight-level rows before detailed stats are attached.
 * `raw_fights_detailed.csv` — Detailed fight export used by notebook **01** (paths may vary; see that notebook's `INPUT_PATH`).
@@ -19,6 +21,8 @@ This folder contains the raw, processed, and modeling datasets for the UFC Match
 * **`kaggle_odds/UFC_betting_odds.csv`** *(optional)* — Multi-row moneyline history. Notebook **14** filters to `region == 'us'`, valid decimal odds, fights that appear in `ufc_fight_stats_cleaned.csv`, and **one row per `Fight_Id`** (latest `adding_date` in the file; see notebook markdown for why event-vs-scrape dates are handled that way).
 
 ### Processed Data (`/data/processed/`)
+
+In a fresh clone only `.gitkeep` is tracked here; CSV/JSON outputs appear after you run the notebooks.
 
 Tables produced by the exploratory stack (NB 01–17):
 
@@ -79,4 +83,4 @@ Tables produced by the exploratory stack (NB 01–17):
 | `ufc_feature_groups.json` | **18** | 19 (ablation ladder), 22 (grouped permutation importance) |
 | Figures / tables only (no new CSV) | 03, 04, 06, 07, 09, 11, 13, 15–17, 19–23 | — |
 
-All notebook **code cells** include a standard header and workflow summary comments; see the root `README.md` under **Notebooks**.
+Supplementary thesis notebooks **24** and **25** read existing processed tables and do not introduce new canonical CSVs beyond figures/tables.

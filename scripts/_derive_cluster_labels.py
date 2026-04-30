@@ -1,6 +1,5 @@
-"""One-off helper: compute the canonical K=5 cluster label table
-for the thesis, mirroring cell 8 of notebook 25.
-"""
+"""Print K=5 cluster profiles and champion placements (same labeling logic as notebook 25)."""
+
 import os
 import pandas as pd
 

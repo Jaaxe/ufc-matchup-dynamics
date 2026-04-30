@@ -1,13 +1,6 @@
-"""
-Standalone bootstrap runner for thesis confidence intervals.
+"""Bootstrap CIs for notebook 20 (stack vs Vegas) and notebook 22 (upset ROI by threshold).
 
-Reproduces notebook 20's Stack+Vegas pipeline on the Vegas-aligned subset,
-then reports paired bootstrap CIs for (AUC, Brier, log loss) differences
-versus Vegas alone. Also reproduces notebook 22's upset residual and reports
-bootstrap CIs for ROI at fixed thresholds.
-
-This script is designed to be run from the project root:
-    python scripts/run_bootstrap_cis.py
+Run from repo root: python scripts/run_bootstrap_cis.py
 """
 
 from __future__ import annotations

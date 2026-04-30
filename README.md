@@ -2,7 +2,7 @@
 
 **Author:** Jarvis Xie  
 **Advisor:** Robert Wooster, Department of Statistics and Data Science  
-**Date:** 2025-03-22
+**Repository:** https://github.com/Jaaxe/ufc-matchup-dynamics  
 
 ---
 
@@ -144,7 +144,7 @@ See `data/README.md` for full details. Key outputs:
 
 ### Notebooks (`notebooks/`)
 
-The analysis pipeline is organized as a sequential workflow in five parts. Run notebooks in numerical order (**01–23**) from the `notebooks/` directory (paths use `../data/`). **Interpretability:** Each notebook includes goal statements, figure interpretations, and takeaway sections. **Code cells:** Every code cell begins with a short **header** (notebook name, cell index, linked markdown section) and a **workflow summary** of how to read that cell. Shared helpers for the unified modeling stack live in `scripts/matchup_utils.py` (rolling pre-fight aggregates, Elo/Glicko-2, event splits, weight-class one-hots, corner symmetrization).
+The analysis pipeline is organized as a sequential workflow in five parts. Run notebooks in numerical order (**01–23**) from `notebooks/` (paths use `../data/`). Each notebook states goals and takeaways in markdown at the top of sections. Shared helpers for the unified matchup table live in `scripts/matchup_utils.py` (rolling pre-fight aggregates, Elo/Glicko-2, event splits, weight-class one-hots, corner symmetrization). Notebooks **24** (historical upset case studies) and **25** (champion validation) are standalone thesis supplements and are **not** executed by `run_pipeline.py`.
 
 - **Part I — Data and EDA (01–07).** Cleaning, fighter-level aggregation, bias checks, comprehensive EDA, and matchup-level deltas.
 - **Part II — Style Discovery (08–12).** K-Means, GMM (selection → final fit with soft posteriors and Hybrid Scores), style-pair interaction matrix, and autoencoder embeddings.
@@ -183,6 +183,9 @@ The analysis pipeline is organized as a sequential workflow in five parts. Run n
 | **21**  | `21_dynamics_suite.ipynb`          | **Fight dynamics.** Binary finish, 3-way method (KO/SUB/DEC), 6-way method with **hierarchical decomposition** `P(finish) × P(method\|finish) × P(winner\|method)`, and regressions for duration / sig strikes / takedowns / control / knockdowns / submission attempts / ground-strike share. Includes the **style-divergence → finish-rate** thesis plot. |
 | **22**  | `22_upset_prediction_vegas.ipynb`  | **Upset prediction.** Treats Vegas as a **feature** (idea #2) and uses the signal `r = p_model(Win_A) − p_vegas_A` as an upset detector. Reports ROC-AUC, top-k lift, a de-vigged ROI simulation, and grouped permutation importance over feature groups. |
 | **23**  | `23_sequence_model.ipynb`          | **Sequence model** (optional stretch). Siamese GRU over last-8 pre-fight histories per corner + tabular context. Honest baseline comparison against HGB on identical test events. |
+| *Thesis supplements (not in `run_pipeline.py`)* |||
+| **24**  | `24_historical_upsets.ipynb`       | Prospective-style scores on a fixed panel of famous upsets (thesis Chapter case studies). |
+| **25**  | `25_champion_style_validation.ipynb` | Champion fighters plotted in GMM / AE space; cluster narrative labels. |
 
 
 ### Running the Pipeline
@@ -193,7 +196,7 @@ From the project root:
 python run_pipeline.py
 ```
 
-This executes all notebooks (**01–23**) in numerical order. Notebook **12** uses **PyTorch** for the autoencoder; **14–16**, **20**, **22** consume `data/raw/kaggle_odds/UFC_betting_odds.csv`. Notebook **17** optionally uses **XGBoost** (`pip install xgboost`); **19** optionally uses **LightGBM** (`pip install lightgbm`). Notebook **23** requires **PyTorch**. Notebooks **15–17** are retained for continuity but are superseded by **19–22**, which load a single unified feature matrix produced by **18** and use a consistent 60/20/20 event-ordered split.
+This executes all notebooks (**01–23**) in numerical order. Notebooks **12** and **23** use **PyTorch**. Notebooks **14–16**, **20**, and **22** use `data/raw/kaggle_odds/UFC_betting_odds.csv` when present. Notebook **17** optionally uses **XGBoost** (`pip install xgboost`); **19** optionally uses **LightGBM** (`pip install lightgbm`). Notebooks **15–17** are retained for continuity but are superseded by **19–22**, which load the unified feature matrix from **18** and use the same event-ordered 60/20/20 split.
 
 ### Data (`data/`)
 
@@ -202,7 +205,7 @@ This executes all notebooks (**01–23**) in numerical order. Notebook **12** us
 
 ### LaTeX Thesis Draft (`latex/`)
 
-The thesis report compiles with `XeLaTeX` (or any LaTeX engine with `fontspec`) from `latex/main.tex`, e.g. `latexmk -xelatex main.tex` inside `latex/`. See the existing `latexmkrc` for the template's default build configuration.
+Build from `latex/main.tex` with `XeLaTeX` (or any engine that supports `fontspec`), e.g. `latexmk -xelatex main.tex` inside `latex/`. Figures live under `latex/graphics/`. The compiled `main.pdf` and auxiliary LaTeX files are **not** tracked in git (see `.gitignore`); generate them locally after cloning.
 
 ---
 
@@ -219,7 +222,8 @@ The thesis report compiles with `XeLaTeX` (or any LaTeX engine with `fontspec`) 
 | **Win-loss bakeoff**              | ✓ Done      | Notebook **19**: 7-way feature ablation × 6 model families + isotonic stack, walk-forward CV on train+val          |
 | **Vegas comparison**              | ✓ Done      | Notebook **20**: `Win_A` objective target, groupwise calibration by weight class / cluster pair / hybrid quintile  |
 | **Visualizations**                | ✓ Done      | Cluster plots, embedding visualizations, matchup heatmaps, reliability curves, grouped permutation-importance bars, style-divergence → finish-rate plot, lift / ROI curves (NB 11, 12, 19, 20, 21, 22) |
-| **Final report and poster**       | In progress | Thesis LaTeX draft lives in `latex/` (see `latex/main.tex`); poster outstanding                                     |
+| **Thesis (LaTeX)**                | ✓ Done      | Full source in `latex/`; compile with `latexmk -xelatex` as above                                                  |
+| **Poster**                        | —           | Course-specific; not part of this repository                                                                       |
 
 
 ---

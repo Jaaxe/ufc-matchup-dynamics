@@ -4,5 +4,8 @@ matplotlib
 seaborn
 scikit-learn
 ipykernel
-# Optional: pip install torch     (notebooks 12, 15 — autoencoder)
-# Optional: pip install xgboost   (notebook 17 — XGBoost comparison cell)
+
+# Optional (specific notebooks):
+#   pip install torch      # 12 — autoencoder; 23 — sequence model
+#   pip install lightgbm   # 19 — optional model family in bakeoff
+#   pip install xgboost    # 17 — optional comparison cell
