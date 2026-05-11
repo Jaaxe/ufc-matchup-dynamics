@@ -420,9 +420,9 @@ delta is the strongest raw correlate of the outcome
 This foreshadows the thesis's central pattern: style will matter
 more for how a fight unfolds than for the top-line outcome.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.70\textwidth]{matchup_correlation.png}
+\includegraphics[width=0.62\textwidth]{matchup_correlation.png}
 \caption{Matchup-level correlation matrix of A$-$B deltas with the
 win and finish indicators.  Strike-volume delta is the largest raw
 correlate of winning ($\rho = 0.19$); the ``style clash'' score is
@@ -482,7 +482,7 @@ posteriors near-redundant: in the high-residual tail, what matters is
 how far apart two fighters are in continuous style space, which is
 information the soft mixture has discarded.
 
-Figure~\ref{fig:gmm-profiles} shows spider (radar) plots of the \(K = 5\) centroid $Z$-score profiles---one panel per component, shared angular axes---so values along each spoke are centroid Z-scores relative to the population mean, with all panels plotted on the same radial scale.  The five clusters are interpretable:
+Figure~\ref{fig:gmm-profiles} shows spider (radar) plots of empirical centroid profiles for each hard \(K = 5\) assignment---the sample mean of the seven standardized style features among fighters with that cluster ID under maximum-posterior labeling from the fitted mixture (assignments and posteriors archived in \texttt{ufc\_gmm\_comparison.csv}).  One panel per cluster ID, shared angular axes; values along each spoke are averages in the same standardized units used to fit the mixture (zero is the mean across qualified fighters), with all panels plotted on the same radial scale.  The five clusters are interpretable:
 \textbf{Cluster 0} ($n=60$) is the submission-leaning grappler
 ($+1.36\sigma$ submissions, $-0.86\sigma$ strikes);
 \textbf{Cluster 1} ($n=279$) is the active distance striker
@@ -494,12 +494,14 @@ on every primary rate and by far the largest group;
 ($+0.91\sigma$ takedowns, $+0.89\sigma$ control,
 $+0.84\sigma$ submissions).
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.88\textwidth]{gmm_profiles_k5.png}
-\caption{Spider (radar) plots of centroid $Z$-score profiles for the \(K = 5\) Gaussian mixture: one panel per mixture component, common radial scale across panels, and ring labels read relative to the population mean (zero is average); submission-leaning grappler (0), active distance striker (1), low-activity (2), baseline generalist (3), takedown-heavy wrestler (4).  Source: notebook~10.}
+\includegraphics[height=0.50\textheight,keepaspectratio]{gmm_profiles_k5.png}
+\caption{Spider (radar) plots of empirical centroid profiles by hard \(K = 5\) cluster assignment (maximum posterior under the fitted mixture; same cluster IDs as \texttt{ufc\_gmm\_comparison.csv}, the heatmap, and Table~\ref{tab:champion-cluster-map}): one panel per cluster, common radial scale, ring labels read relative to the qualified-fighter mean (zero is average); submission-leaning grappler (0), active distance striker (1), low-activity (2), baseline generalist (3), takedown-heavy wrestler (4).  Source: notebook~10.}
 \label{fig:gmm-profiles}
 \end{figure}
+
+\FloatBarrier
 
 \section{Qualitative champion check}\label{sec:champion-validation}
 
@@ -512,6 +514,24 @@ and check how they land in the autoencoder space
 a formal validation: the panel is small, hand-picked, and labeled
 with informal expert intuition rather than tested against a
 held-out outcome.
+
+\begin{figure}[H]
+\centering
+\includegraphics[height=0.55\textheight,keepaspectratio]{ae_champions.png}
+\caption{Three-dimensional autoencoder style space with twenty-five
+annotated UFC champions, colored by \(K = 5\) hard assignment.  Khabib,
+Makhachev, and GSP cluster with other wrestler-dominant fighters;
+Holloway, Aldo, McGregor, Adesanya, and Pereira cluster with other
+kickboxing-style strikers; generalists such as Jon Jones,
+Volkanovski, Johnson, and Cejudo fall in the baseline cluster
+between.  A companion text table mapping each named champion to
+their \(K = 5\) cluster appears in Section~\ref{sec:champion-validation};
+the labels in this 3D figure are intentionally compact and the
+table is the canonical reference.  Source: notebook~25.}
+\label{fig:ae-champions}
+\end{figure}
+
+\FloatBarrier
 
 Three patterns emerge.  First, fighters described as
 universally similar cluster together: Khabib Nurmagomedov, Islam
@@ -527,22 +547,6 @@ Daniel Cormier---the four fighters most routinely cited as the
 sport's most complete generalists---sit in the upper quintile of
 \(H(\pi)\), while Khabib (\(H \approx 0.07\)) and Ngannou
 (\(H \approx 0.21\)) sit at the bottom.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.88\textwidth]{ae_champions.png}
-\caption{Three-dimensional autoencoder style space with twenty-five
-annotated UFC champions, colored by \(K = 5\) hard assignment.  Khabib,
-Makhachev, and GSP cluster with other wrestler-dominant fighters;
-Holloway, Aldo, McGregor, Adesanya, and Pereira cluster with other
-kickboxing-style strikers; generalists such as Jon Jones,
-Volkanovski, Johnson, and Cejudo fall in the baseline cluster
-between.  A companion text table mapping each named champion to
-their \(K = 5\) cluster appears in Section~\ref{sec:champion-validation};
-the labels in this 3D figure are intentionally compact and the
-table is the canonical reference.  Source: notebook~25.}
-\label{fig:ae-champions}
-\end{figure}
 
 \begin{table}[ht]
 \centering
@@ -601,9 +605,9 @@ they enter only as one column among many; the upset model
 below chance as a stand-alone signal, which is consistent
 with the descriptive framing here.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.78\textwidth]{style_heatmap.png}
+\includegraphics[height=0.42\textheight,keepaspectratio]{style_heatmap.png}
 \caption{Empirical win rate of \(K = 5\) style A (row) versus \(K = 5\)
 style B (column), with fight counts per cell.  Predominantly near
 $0.5$, consistent with style being a weak unconditional predictor;
@@ -625,15 +629,17 @@ data rule out is specifically the claim that hybridness translates
 into higher win rates in the aggregate---not the broader claim that
 style is informative in the right task.
 
-\begin{figure}[ht]
+\begin{figure}[!htbp]
 \centering
-\includegraphics[width=0.70\textwidth]{hybrid_winrate.png}
+\includegraphics[height=0.32\textheight,keepaspectratio]{hybrid_winrate.png}
 \caption{Win rate by Hybrid Score quintile.  All five buckets lie
 within $\pm 1.5$ percentage points of $50\%$; the
 hybrid-beats-specialist hypothesis is not supported at the
 population level.  Source: notebook~11.}
 \label{fig:hybrid-winrate}
 \end{figure}
+
+\FloatBarrier
 
 % =====================================================================
 \chapter{Does Style Predict Who Wins?}\label{ch:matchup}
@@ -778,7 +784,7 @@ important column; among non-market features, the rolling pre-fight
 rates and the autoencoder embedding are the two largest
 contributors.
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{reliability_vegas.png}
 \caption{Left: reliability curves on the Vegas-aligned test subset
@@ -790,6 +796,8 @@ Vegas-aligned test count; curve points omit probability bins with
 fewer than five rows.  Source: notebook~20.}
 \label{fig:reliability-vegas}
 \end{figure}
+
+\FloatBarrier
 
 On who wins, then, style is a supporting actor: it lifts the
 feature-stack AUC by a few points above a $Z$-score baseline, is

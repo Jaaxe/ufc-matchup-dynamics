@@ -14,6 +14,8 @@
 %\usepackage{comment} % permits a comment environment w/ varied versions
 
 \usepackage{graphicx}
+\usepackage{float} % [H] here floats when placement must not interrupt following paragraphs
+\usepackage{placeins} % \FloatBarrier at chapter/section boundaries
 
 
 %%% Most of these are either optional or probably not needed for most people
@@ -23,6 +25,8 @@
 %\usepackage{wrapfig} % wrap around figures
 % \usepackage{ragged2e}
 \usepackage{booktabs} % enhances tables
+\usepackage{caption}
+\captionsetup[table]{skip=8pt}
 \usepackage{colortbl}
 % \usepackage{newtxmath,newtxtext}
 % \usepackage{svg} % take this out if yale-crest isn't an svg
